@@ -24,7 +24,7 @@ async function getGender(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -37,8 +37,7 @@ async function createGender(postData) {
     }
     return await getGender(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -51,7 +50,7 @@ async function updateGender(genderId, putData) {
     }
     return await getGender(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -64,7 +63,7 @@ async function deleteGender(genderId) {
         return "Data Not Founded...!";
       }
   } catch (error) {
-      throw error;
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
   }
 

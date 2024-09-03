@@ -24,7 +24,7 @@ async function getRole(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -37,7 +37,7 @@ async function createRole(postData) {
     }
     return await getRole(req);
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -50,7 +50,7 @@ async function updateRole(roleId, putData) {
     }
     return await getRole(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -63,7 +63,7 @@ async function deleteRole(roleId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

@@ -12,6 +12,9 @@ async function getDistrict(query) {
       if (query.districtId) {
         iql.district_id = query.districtId;
       }
+      if (query.stateId) {
+        iql.state_id = query.stateId;
+      }
       if (query.isActive) {
         iql.is_active = query.isActive;
       }
@@ -57,8 +60,7 @@ async function getDistrict(query) {
     });
     return result;
   } catch (error) {
-    console.log(error)
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -71,8 +73,7 @@ async function createDistrict(postData) {
     }
     return await getDistrict(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -85,7 +86,7 @@ async function updateDistrict(districtId, putData) {
     }
     return await getDistrict(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -98,7 +99,7 @@ async function deleteDistrict(districtId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

@@ -13,6 +13,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      refered_by: {
+        type: Sequelize.STRING
+      },
       first_name: {
         allowNull: false,
         type: Sequelize.STRING
@@ -36,6 +39,10 @@ module.exports = {
       },
       date_of_reliving: {
         type: Sequelize.DATE
+      },
+      gender_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
       role_id: {
         allowNull: false,

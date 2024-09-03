@@ -19,12 +19,13 @@ async function getCategory(query) {
       attributes: [['category_id', 'categoryId'], ['category_name', 'categoryName'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
+      order: [['category_id', 'DESC']],
       raw: true,
       nest: false
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -37,8 +38,7 @@ async function createCategory(postData) {
     }
     return await getCategory(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -51,7 +51,7 @@ async function updateCategory(categoryId, putData) {
     }
     return await getCategory(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }}
 
 module.exports = {

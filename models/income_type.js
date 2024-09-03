@@ -10,9 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      income_type.belongsTo(models.employee, {
-        foreignKey: 'created_by',
-        onDelete: 'CASCADE'
+      income_type.hasMany(models.income_entry, {
+        foreignKey: 'income_type_id'
       });
     }
   }
@@ -23,9 +22,6 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     income_type_name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    income_date : DataTypes.DATE,
-    created_by : DataTypes.INTEGER,
     is_active: DataTypes.BOOLEAN
   }, {
     sequelize,

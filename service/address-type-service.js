@@ -24,7 +24,7 @@ async function getAddressType(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -38,7 +38,7 @@ async function createAddressType(postData) {
     return await getAddressType(req);
   } catch (error) {
     console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -51,7 +51,7 @@ async function updateAddressType(addressTypeId, putData) {
     }
     return await getAddressType(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -64,7 +64,7 @@ async function deleteAddressType(addressTypeId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

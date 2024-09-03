@@ -30,7 +30,7 @@ async function getBankAccount(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -39,12 +39,11 @@ async function createBankAccount(postData) {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const bankAccountResult = await sequelize.models.bank_account.create(excuteMethod);
     const req = {
-      bankAccountId: bankAccountResult.bankAccount_id
+      bankAccountId: bankAccountResult.bank_account_id
     }
     return await getBankAccount(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -57,7 +56,7 @@ async function updateBankAccount(bankAccountId, putData) {
     }
     return await getBankAccount(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -70,7 +69,7 @@ async function deleteBankAccount(bankAccountId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

@@ -27,7 +27,7 @@ async function getLoanChargesDetails(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -40,8 +40,7 @@ async function createLoanChargesDetails(postData) {
     }
     return await getLoanChargesDetails(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -54,7 +53,7 @@ async function updateLoanChargesDetails(loanChargesDetailsId, putData) {
     }
     return await getLoanChargesDetails(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

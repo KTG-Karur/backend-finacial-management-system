@@ -19,6 +19,7 @@ async function getSubCategory(query) {
     const result = await sequelize.models.sub_category.findAll({
       attributes: [['sub_category_id', 'subCategoryId'], 
       ['sub_category_name', 'subCategoryName'],
+      ['interest_rate', 'interestRate'],
       ['category_id', 'categoryId'],[sequelize.col('category.category_name'), 'categoryName'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
@@ -39,7 +40,7 @@ async function getSubCategory(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -52,8 +53,7 @@ async function createSubCategory(postData) {
     }
     return await getSubCategory(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -66,7 +66,7 @@ async function updateSubCategory(subCategoryId, putData) {
     }
     return await getSubCategory(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -79,7 +79,7 @@ async function deleteSubCategory(subCategoryId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

@@ -29,22 +29,25 @@ async function getApplicantDetails(query) {
     });
     return result;
   } catch (error) {
-    console.log(error)
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
-async function createApplicantDetails(postData) {
+async function createApplicantDetails(postData, externalCall = false) {
   try {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const applicantDetailsResult = await sequelize.models.applicant_details.create(excuteMethod);
-    const req = {
-      applicantDetailsId: applicantDetailsResult.applicant_details_id
+    if(externalCall){
+      return true;
+    }else{
+      const req = {
+        applicantDetailsId: applicantDetailsResult.applicant_details_id
+      }
+      return await getApplicantDetails(req);
     }
-    return await getApplicantDetails(req);
+    
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -57,7 +60,7 @@ async function updateApplicantDetails(applicantDetailsId, putData) {
     }
     return await getApplicantDetails(req);
   } catch (error) {
-    throw error;
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 

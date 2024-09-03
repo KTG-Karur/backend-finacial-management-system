@@ -19,31 +19,14 @@ async function getExpensiveType(query) {
     const result = await sequelize.models.expensive_type.findAll({
       attributes: [['expensive_type_id', 'expensiveTypeId'], 
       ['expensive_type_name', 'expensiveTypeName'],
-      ['created_by', 'employeeId'],
-      [sequelize.col('employee.first_name'), 'firstName'],
-      [sequelize.col('employee.last_name'), 'lastName'],
-      ['expensive_date', 'expensiveDate'],
-      ['description', 'description'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
-      include: [
-        {
-            model: sequelize.models.employee,
-            as: 'employee',
-            required: false,
-            on: {
-                employee_id: {
-                    [Op.eq]: sequelize.col('expensive_type.created_by')
-                }
-            },
-            attributes: []
-        }],
       raw: true,
       nest: false
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -52,12 +35,11 @@ async function createExpensiveType(postData) {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const expensiveTypeResult = await sequelize.models.expensive_type.create(excuteMethod);
     const req = {
-      expensiveTypeId: expensiveTypeResult.expensiveType_id
+      expensiveTypeId: expensiveTypeResult.expensive_type_id
     }
     return await getExpensiveType(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -70,7 +52,7 @@ async function updateExpensiveType(expensiveTypeId, putData) {
     }
     return await getExpensiveType(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -83,7 +65,7 @@ async function deleteExpensiveType(expensiveTypeId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

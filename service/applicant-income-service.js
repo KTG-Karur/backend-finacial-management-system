@@ -29,21 +29,25 @@ async function getApplicantIncome(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
-async function createApplicantIncome(postData) {
+async function createApplicantIncome(postData, externalCall = false) {
   try {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const applicantIncomeResult = await sequelize.models.applicant_income_info.create(excuteMethod);
-    const req = {
-      applicantIncomeId: applicantIncomeResult.applicant_income_info_id
+    if(externalCall){
+      return true;
+    }else{
+      const req = {
+        applicantIncomeId: applicantIncomeResult.applicant_income_info_id
+      }
+      return await getApplicantIncome(req);
     }
-    return await getApplicantIncome(req);
+    
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -56,7 +60,7 @@ async function updateApplicantIncome(applicantIncomeId, putData) {
     }
     return await getApplicantIncome(req);
   } catch (error) {
-    throw error;
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 

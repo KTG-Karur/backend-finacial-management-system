@@ -6,6 +6,7 @@ const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
 const disbursedMethodServices = require("../service/disbursed-method-service");
+const _ = require('lodash');
 
 const schema = {
   disbursedMethodName: { type: "string", optional: false, min:1, max: 100 }
@@ -49,7 +50,8 @@ async function updateDisbursedMethod(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
-    const validationResponse = v.validate(req.body, schema)
+    const filteredSchema = _.pick(schema, Object.keys(req.body));
+    const validationResponse = v.validate(req.body, filteredSchema)
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{

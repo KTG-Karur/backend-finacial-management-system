@@ -6,6 +6,7 @@ const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
 const bankAccountServices = require("../service/bank-account-service");
+const _ = require('lodash');
 
 const schema = {
   accountHolderName: { type: "string", optional: false, min:1, max: 100 },
@@ -53,7 +54,8 @@ async function updateBankAccount(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
-    const validationResponse = v.validate(req.body, schema)
+    const filteredSchema = _.pick(schema, Object.keys(req.body));
+    const validationResponse = v.validate(req.body, filteredSchema)
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{

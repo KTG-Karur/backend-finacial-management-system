@@ -6,6 +6,7 @@ const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
 const applicantAddressServices = require("../service/applicant-address-service");
+const _ = require('lodash');
 
 const schema = {
     $$root: true,
@@ -63,10 +64,11 @@ async function updateApplicantAddress(req, res) {
     const responseEntries = new ResponseEntry();
     const v = new Validator()
     try {
-        const validationResponse = v.validate(req.body, schema)
+        const filteredSchema = _.pick(schema, Object.keys(req.body));
+        const validationResponse = v.validate(req.body, filteredSchema)
         if (validationResponse != true) {
-            throw new Error(messages.VALIDATION_FAILED);
-        } else {
+          throw new Error(messages.VALIDATION_FAILED);
+        }else{
             responseEntries.data = await applicantAddressServices.updateApplicantAddress(req.params.applicantAddressInfoId, req.body);
             if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
         }

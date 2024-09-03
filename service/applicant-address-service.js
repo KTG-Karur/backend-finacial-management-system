@@ -29,21 +29,24 @@ async function getApplicantAddress(query) {
         });
         return result;
     } catch (error) {
-        throw new Error(messages.OPERATION_ERROR);
+        throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
 
-async function createApplicantAddress(postData) {
+async function createApplicantAddress(postData, externalCall = false) {
     try {
         const excuteMethod = _.map(postData, (item) => _.mapKeys(item, (value, key) => _.snakeCase(key)));
         const applicantAddressResult = await sequelize.models.applicant_address_info.bulkCreate(excuteMethod);
+        if(externalCall){
+            return true;
+          }
         const req = {
             applicantAddressInfoId: applicantAddressResult[applicantAddressResult.length - 1].applicant_address_info_id
         }
 
         return await getApplicantAddress(req);
     } catch (error) {
-        throw new Error(messages.OPERATION_ERROR);
+        throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
 
@@ -65,7 +68,7 @@ async function updateApplicantAddress(applicantAddressInfoId, putData) {
         }
         return await getApplicantAddress(req);
     } catch (error) {
-        throw error;
+        throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
 

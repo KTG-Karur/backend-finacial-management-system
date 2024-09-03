@@ -6,6 +6,7 @@ const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
 const designationServices = require("../service/designation-service");
+const _ = require('lodash');
 
 const schema = {
     designationName: { type: "string", optional: false, min: 1, max: 100 }
@@ -40,6 +41,7 @@ async function createDesignation(req, res) {
         responseEntries.error = true;
         responseEntries.message = error.message ? error.message : error;
         responseEntries.code = responseCode.BAD_REQUEST;
+        res.status(responseCode.BAD_REQUEST);
     } finally {
         res.send(responseEntries);
     }
@@ -49,7 +51,8 @@ async function updateDesignation(req, res) {
     const responseEntries = new ResponseEntry();
     const v = new Validator()
     try {
-        const validationResponse = await v.validate(req.body, schema)
+        const filteredSchema = _.pick(schema, Object.keys(req.body));
+        const validationResponse = v.validate(req.body, filteredSchema)
         if (validationResponse != true) {
             throw new Error(messages.VALIDATION_FAILED);
         } else {

@@ -12,12 +12,18 @@ async function getState(query) {
       if (query.stateId) {
         iql.state_id = query.stateId;
       }
+      if (query.countryId) {
+        iql.country_id = query.countryId;
+      }
       if (query.isActive) {
         iql.is_active = query.isActive;
       }
     }
     const result = await sequelize.models.state.findAll({
-      attributes: [['state_id', 'stateId'], ['state_name', 'stateName'],[sequelize.col('country.country_name'), 'countryName'],
+      attributes: [['state_id', 'stateId'], 
+      ['state_name', 'stateName'],
+      ['country_id', 'countryId'],
+      [sequelize.col('country.country_name'), 'countryName'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
       include: [
@@ -37,8 +43,7 @@ async function getState(query) {
     });
     return result;
   } catch (error) {
-    console.log(error)
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -64,7 +69,7 @@ async function updateState(stateId, putData) {
     }
     return await getState(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -77,7 +82,7 @@ async function deleteState(stateId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

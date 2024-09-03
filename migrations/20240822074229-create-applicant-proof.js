@@ -12,7 +12,6 @@ module.exports = {
       applicant_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        unique : true
       },
       applicant_type_id: {
         allowNull: false,

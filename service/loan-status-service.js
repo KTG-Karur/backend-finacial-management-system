@@ -24,8 +24,7 @@ async function getLoanStatus(query) {
     });
     return result;
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -38,8 +37,7 @@ async function createLoanStatus(postData) {
     }
     return await getLoanStatus(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -52,7 +50,7 @@ async function updateLoanStatus(loanStatusId, putData) {
     }
     return await getLoanStatus(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -65,7 +63,7 @@ async function deleteLoanStatus(loanStatusId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

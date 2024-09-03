@@ -24,8 +24,7 @@ async function getApplicantProofType(query) {
     });
     return result;
   } catch (error) {
-    console.log(error)
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -38,8 +37,7 @@ async function createApplicantProofType(postData) {
     }
     return await getApplicantProofType(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -52,7 +50,7 @@ async function updateApplicantProofType(applicantProofTypeId, putData) {
     }
     return await getApplicantProofType(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -65,7 +63,7 @@ async function deleteApplicantProofType(applicantProofTypeId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

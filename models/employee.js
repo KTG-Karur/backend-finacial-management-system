@@ -34,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     employee_code: DataTypes.STRING,
+    refered_by: DataTypes.STRING,
     first_name: DataTypes.STRING,
     last_name: DataTypes.STRING,
     dob: DataTypes.DATE,
@@ -42,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
     date_of_joining: DataTypes.DATE,
     date_of_reliving: DataTypes.DATE,
     role_id: DataTypes.INTEGER,
+    gender_id: DataTypes.INTEGER,
     department_id: DataTypes.INTEGER,
     designation_id: DataTypes.INTEGER,
     is_active: DataTypes.BOOLEAN

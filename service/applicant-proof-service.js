@@ -29,21 +29,23 @@ async function getApplicantProof(query) {
         });
         return result;
     } catch (error) {
-        throw new Error(messages.OPERATION_ERROR);
+        throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
 
-async function createApplicantProof(postData) {
+async function createApplicantProof(postData,  externalCall = false) {
     try {
         const excuteMethod = _.map(postData, (item) => _.mapKeys(item, (value, key) => _.snakeCase(key)));
         const applicantProofResult = await sequelize.models.applicant_proof.bulkCreate(excuteMethod);
+        if(externalCall){
+            return true;
+          }
         const req = {
             applicantProofId: applicantProofResult[applicantProofResult.length - 1].applicant_proof_id
         }
         return await getApplicantProof(req);
     } catch (error) {
-        console.error(error);
-        throw new Error(messages.OPERATION_ERROR);
+        throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
 
@@ -65,7 +67,7 @@ async function updateApplicantProof(applicantProofId, putData) {
         }
         return await getApplicantProof(req);
     } catch (error) {
-        throw error;
+        throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
 

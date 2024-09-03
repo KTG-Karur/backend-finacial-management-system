@@ -36,7 +36,7 @@ async function getUser(query) {
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -50,8 +50,7 @@ async function createUser(postData) {
     }
     return await getUser(req);
   } catch (error) {
-    console.log(error.errors[0].type);
-    throw new Error(error?.errors[0]?.type ? error.errors[0].type : messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -65,7 +64,7 @@ async function updateUser(userId, putData) {
     }
     return await getUser(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -78,7 +77,7 @@ async function deleteUser(userId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

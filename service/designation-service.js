@@ -19,12 +19,14 @@ async function getDesignation(query) {
       attributes: [['designation_id', 'designationId'], ['designation_name', 'designationName'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
+      order: [['designation_id', 'DESC']],
       raw: true,
       nest: false
     });
     return result;
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    console.log(error)
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -37,8 +39,7 @@ async function createDesignation(postData) {
     }
     return await getDesignation(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -51,7 +52,7 @@ async function updateDesignation(designationId, putData) {
     }
     return await getDesignation(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -64,7 +65,7 @@ async function deleteDesignation(designationId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

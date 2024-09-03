@@ -19,13 +19,13 @@ async function getApplicantType(query) {
       attributes: [['applicant_type_id', 'applicantTypeId'], ['applicant_type_name', 'applicantTypeName'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
+      order: [['applicant_type_id', 'DESC']],
       raw: true,
       nest: false
     });
     return result;
   } catch (error) {
-    console.log(error)
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -38,7 +38,7 @@ async function createApplicantType(postData) {
     }
     return await getApplicantType(req);
   } catch (error) {
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -51,7 +51,7 @@ async function updateApplicantType(applicantTypeId, putData) {
     }
     return await getApplicantType(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -64,7 +64,7 @@ async function deleteApplicantType(applicantTypeId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 

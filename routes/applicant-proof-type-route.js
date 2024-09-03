@@ -6,6 +6,7 @@ const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
 const applicantProofTypeServices = require("../service/applicant-proof-type-service");
+const _ = require('lodash');
 
 const schema = {
   proofTypeName: { type: "string", optional: false, min:1, max: 100 }
@@ -20,6 +21,7 @@ async function getApplicantProofType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -40,6 +42,7 @@ async function createApplicantProofType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -49,7 +52,8 @@ async function updateApplicantProofType(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
-    const validationResponse = v.validate(req.body, schema)
+    const filteredSchema = _.pick(schema, Object.keys(req.body));
+    const validationResponse = v.validate(req.body, filteredSchema)
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
@@ -60,6 +64,7 @@ async function updateApplicantProofType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -74,6 +79,7 @@ async function deleteApplicantProofType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -82,28 +88,28 @@ async function deleteApplicantProofType(req, res) {
 module.exports = async function (fastify) {
   fastify.route({
     method: 'GET',
-    url: '/applicant-proof-type',
+    url: '/proof-type',
     preHandler: verifyToken,
     handler: getApplicantProofType
   });
 
   fastify.route({
     method: 'POST',
-    url: '/applicant-proof-type',
+    url: '/proof-type',
     preHandler: verifyToken,
     handler: createApplicantProofType
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/applicant-proof-type/:applicantProofTypeId',
+    url: '/proof-type/:applicantProofTypeId',
     preHandler: verifyToken,
     handler: updateApplicantProofType
   });
 
   fastify.route({
     method: 'DELETE',
-    url: '/applicant-proof-type/:applicantProofTypeId',
+    url: '/proof-type/:applicantProofTypeId',
     preHandler: verifyToken,
     handler: deleteApplicantProofType
   });

@@ -6,12 +6,10 @@ const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
 const expensiveTypeServices = require("../service/expensive-type-service");
+const _ = require('lodash');
 
 const schema = {
   expensiveTypeName: { type: "string", optional: false, min:1, max: 100 },
-  expensiveDate :  { type: "string", format: "date",optional: false },
-  description: { type: "string", optional: false, min:1 },
-  createdBy : "number|optional|integer|positive",
 }
 
 async function getExpensiveType(req, res) {
@@ -23,6 +21,7 @@ async function getExpensiveType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -43,6 +42,7 @@ async function createExpensiveType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -52,7 +52,8 @@ async function updateExpensiveType(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
-    const validationResponse = v.validate(req.body, schema)
+    const filteredSchema = _.pick(schema, Object.keys(req.body));
+    const validationResponse = v.validate(req.body, filteredSchema)
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
@@ -63,6 +64,7 @@ async function updateExpensiveType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -77,6 +79,7 @@ async function deleteExpensiveType(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }

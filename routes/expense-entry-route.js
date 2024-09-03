@@ -5,18 +5,21 @@ const { verifyToken } = require("../middleware/auth");
 const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
-const stateServices = require("../service/state-service");
+const expenseEntryServices = require("../service/expense-entry-service");
 const _ = require('lodash');
 
 const schema = {
-  stateName: { type: "string", optional: false, min:1, max: 100 },
-  countryId : "number|required|integer|positive",
+    expenseTypeId: "number|required|integer|positive",
+    description: { type: "string", optional: false, min:1},
+    createdBy: "number|required|integer|positive",
+    expenseDate: { type: "string", format: "date", },
+    expenseAmount: { type: "string", optional: false, min:1, max: 100 },
 }
 
-async function getState(req, res) {
+async function getExpenseEntry(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await stateServices.getState(req.query);
+    responseEntries.data = await expenseEntryServices.getExpenseEntry(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -28,7 +31,7 @@ async function getState(req, res) {
   }
 }
 
-async function createState(req, res) {
+async function createExpenseEntry(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -36,7 +39,7 @@ async function createState(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-    responseEntries.data = await stateServices.createState(req.body);
+    responseEntries.data = await expenseEntryServices.createExpenseEntry(req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -49,7 +52,7 @@ async function createState(req, res) {
   }
 }
 
-async function updateState(req, res) {
+async function updateExpenseEntry(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -58,7 +61,7 @@ async function updateState(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-      responseEntries.data = await stateServices.updateState(req.params.stateId, req.body);
+      responseEntries.data = await expenseEntryServices.updateExpenseEntry(req.params.expenseEntryId, req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -71,10 +74,10 @@ async function updateState(req, res) {
   }
 }
 
-async function deleteState(req, res) {
+async function deleteExpenseEntry(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await stateServices.deleteState(req.params.stateId);
+    responseEntries.data = await expenseEntryServices.deleteExpenseEntry(req.params.expenseEntryId);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -88,29 +91,23 @@ async function deleteState(req, res) {
 module.exports = async function (fastify) {
   fastify.route({
     method: 'GET',
-    url: '/state',
+    url: '/expense-entry',
     preHandler: verifyToken,
-    handler: getState
+    handler: getExpenseEntry
   });
 
   fastify.route({
     method: 'POST',
-    url: '/state',
+    url: '/expense-entry',
     preHandler: verifyToken,
-    handler: createState
+    handler: createExpenseEntry
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/state/:stateId',
+    url: '/expense-entry/:expenseEntryId',
     preHandler: verifyToken,
-    handler: updateState
+    handler: updateExpenseEntry
   });
 
-  fastify.route({
-    method: 'DELETE',
-    url: '/state/:stateId',
-    preHandler: verifyToken,
-    handler: deleteState
-  });
 };

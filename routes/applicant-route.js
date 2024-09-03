@@ -11,13 +11,13 @@ const _ = require('lodash');
 const schema = {
   firstName: { type: "string", optional: false, min:1, max: 100 },
   lastName: { type: "string", optional: false, min:1, max: 100 },
-  qualification: { type: "string", optional: false, min:1, max: 100 },
-  dob: { type: "string", optional: false, format: "date", },
+  // qualification: { type: "string", optional: false, min:1, max: 100 },
+  // dob: { type: "string", optional: false, format: "date", },
   contactNo: { type: "string", optional: false, min:10, max: 10 },
-  alternativeContactNo: { type: "string", optional: false, min:10, max: 10 },
-  email: { type: "email", optional: true, min:1, max: 100 },
+  // alternativeContactNo: { type: "string", optional: false, min:10, max: 10 },
+  // email: { type: "email", optional: true, min:1, max: 100 },
   genderId : "number|required|integer|positive",
-  martialStatusId : "number|required|integer|positive",
+  // martialStatusId : "number|required|integer|positive",
 }
 
 async function getApplicant(req, res) {
@@ -29,6 +29,7 @@ async function getApplicant(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -49,6 +50,7 @@ async function createApplicant(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
@@ -70,6 +72,7 @@ async function updateApplicant(req, res) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }

@@ -25,7 +25,7 @@ async function getDisbursedMethod(query) {
     return result;
   } catch (error) {
     console.log(error)
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -38,8 +38,7 @@ async function createDisbursedMethod(postData) {
     }
     return await getDisbursedMethod(req);
   } catch (error) {
-    console.error(error);
-    throw new Error(messages.OPERATION_ERROR);
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -52,7 +51,7 @@ async function updateDisbursedMethod(disbursedMethodId, putData) {
     }
     return await getDisbursedMethod(req);
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
@@ -65,7 +64,7 @@ async function deleteDisbursedMethod(disbursedMethodId) {
       return "Data Not Founded...!";
     }
 } catch (error) {
-    throw error;
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
