@@ -4,7 +4,7 @@ const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
 
-async function getLoanCharges(query) {
+async function getLoanChargesType(query) {
   try {
     let iql = {};
     if (query && Object.keys(query).length) {
@@ -15,8 +15,11 @@ async function getLoanCharges(query) {
         iql.is_active = query.isActive;
       }
     }
-    const result = await sequelize.models.loanCharges.findAll({
-      attributes: [['loan_charges_id', 'loanChargesId'], ['loanCharges_name', 'loanChargesName'],
+    const result = await sequelize.models.loan_charges.findAll({
+      attributes: [['loan_charges_id', 'loanChargesId'], 
+      ['loan_charges_name', 'loanChargesName'],
+      ['is_percentage', 'isPercentage'],
+      ['charges_amount', 'chargesAmount'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
       raw: true,
@@ -28,35 +31,35 @@ async function getLoanCharges(query) {
   }
 }
 
-async function createLoanCharges(postData) {
+async function createLoanChargesType(postData) {
   try {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
-    const loanChargesResult = await sequelize.models.loanCharges.create(excuteMethod);
+    const loanChargesResult = await sequelize.models.loan_charges.create(excuteMethod);
     const req = {
-      loanChargesId: loanChargesResult.loanCharges_id
+      loanChargesId: loanChargesResult.loan_charges_id
     }
-    return await getLoanCharges(req);
+    return await getLoanChargesType(req);
   } catch (error) {
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
-async function updateLoanCharges(loanChargesId, putData) {
+async function updateLoanChargesType(loanChargesId, putData) {
   try {
     const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
-    const loanChargesResult = await sequelize.models.loanCharges.update(excuteMethod, { where: { loanCharges_id: loanChargesId } });
+    const loanChargesResult = await sequelize.models.loan_charges.update(excuteMethod, { where: { loan_charges_id: loanChargesId } });
     const req = {
       loanChargesId: loanChargesId
     }
-    return await getLoanCharges(req);
+    return await getLoanChargesType(req);
 } catch (error) {
   throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }
 }
 
-async function deleteLoanCharges(loanChargesId) {
+async function deleteLoanChargesType(loanChargesId) {
   try {
-    const loanChargesResult = await sequelize.models.loanCharges.destroy({ where: { loanCharges_id: loanChargesId } });
+    const loanChargesResult = await sequelize.models.loan_charges.destroy({ where: { loan_charges_id: loanChargesId } });
     if(loanChargesResult == 1){
       return "Deleted Successfully...!";
     }else{
@@ -68,8 +71,8 @@ async function deleteLoanCharges(loanChargesId) {
 }
 
 module.exports = {
-  getLoanCharges,
-  updateLoanCharges,
-  createLoanCharges,
-  deleteLoanCharges
+  getLoanChargesType,
+  updateLoanChargesType,
+  createLoanChargesType,
+  deleteLoanChargesType
 };

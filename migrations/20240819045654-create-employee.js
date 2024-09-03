@@ -16,6 +16,9 @@ module.exports = {
       refered_by: {
         type: Sequelize.STRING
       },
+      address: {
+        type: Sequelize.STRING
+      },
       first_name: {
         allowNull: false,
         type: Sequelize.STRING
@@ -48,6 +51,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      user_id: {
+        type: Sequelize.INTEGER
+      },
       department_id: {
         type: Sequelize.INTEGER
       },
@@ -58,6 +64,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.BOOLEAN,
         defaultValue: 1
+      },
+      is_user: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,

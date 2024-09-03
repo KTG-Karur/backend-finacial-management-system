@@ -11,7 +11,6 @@ const _ = require('lodash');
 const schema = {
   userName: { type: "email", optional: false, min:1, max: 100 },
   password: "string|min:6",
-  employeeId : "number|optional|integer|positive",
 }
 
 async function getUser(req, res) {

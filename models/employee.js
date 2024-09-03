@@ -39,14 +39,17 @@ module.exports = (sequelize, DataTypes) => {
     last_name: DataTypes.STRING,
     dob: DataTypes.DATE,
     contact_no: DataTypes.STRING,
+    address: DataTypes.STRING,
     email_id: DataTypes.STRING,
     date_of_joining: DataTypes.DATE,
     date_of_reliving: DataTypes.DATE,
     role_id: DataTypes.INTEGER,
+    user_id: DataTypes.INTEGER,
     gender_id: DataTypes.INTEGER,
     department_id: DataTypes.INTEGER,
     designation_id: DataTypes.INTEGER,
-    is_active: DataTypes.BOOLEAN
+    is_active: DataTypes.BOOLEAN,
+    is_user: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'employee',

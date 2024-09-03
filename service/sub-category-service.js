@@ -12,6 +12,9 @@ async function getSubCategory(query) {
       if (query.subCategoryId) {
         iql.sub_category_id = query.subCategoryId;
       }
+      if (query.categoryId) {
+        iql.category_id = query.categoryId;
+      }
       if (query.isActive) {
         iql.is_active = query.isActive;
       }

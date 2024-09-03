@@ -19,11 +19,6 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
-      employee_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        unique: true
-      },
       is_active: {
         allowNull: false,
         type: Sequelize.BOOLEAN,

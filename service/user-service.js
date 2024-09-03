@@ -4,6 +4,7 @@ const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
 const { encrptPassword } = require('../utils/utility');
+const Validator = require('fastest-validator')
 
 const schema = {
   userName: { type: "email", optional: false, min:1, max: 100 },
@@ -28,7 +29,6 @@ async function getUser(query) {
     const result = await sequelize.models.user.findAll({
       attributes: [['user_id', 'userId'],
        ['user_name', 'userName'],
-       ['employee_id', 'employeeId'],
       ['is_active', 'isActive'], ['createdAt', 'createdAt']],
       where: iql,
       raw: true,
@@ -41,7 +41,13 @@ async function getUser(query) {
 }
 
 async function createUser(postData) {
+  console.log(postData)
+  const v = new Validator()
   try {
+    const validationResponse = await v.validate(postData, schema)
+    if (validationResponse != true) {
+      throw new Error(messages.VALIDATION_FAILED);
+    }else{
     postData.password = await encrptPassword(postData.password)
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const userResult = await sequelize.models.user.create(excuteMethod);
@@ -49,7 +55,9 @@ async function createUser(postData) {
       userId: userResult.user_id
     }
     return await getUser(req);
+  }
   } catch (error) {
+    console.log(error)
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
