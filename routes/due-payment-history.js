@@ -9,7 +9,7 @@ const duePaymentHistoryServices = require("../service/due-payment-history-servic
 const _ = require('lodash');
 
 const schema = {
-  duePaymentHistoryName: { type: "string", optional: false, min:1, max: 100 }
+  duePaymentHistoryName: { type: "string", optional: false, min: 1, max: 100 }
 }
 
 async function getDuePaymentHistory(req, res) {
@@ -29,15 +29,17 @@ async function getDuePaymentHistory(req, res) {
 
 async function createDuePaymentHistory(req, res) {
   const responseEntries = new ResponseEntry();
-  const v = new Validator()
+  // const v = new Validator()
   try {
-    const validationResponse = await v.validate(req.body, schema)
-    if (validationResponse != true) {
-      throw new Error(messages.VALIDATION_FAILED);
-    }else{
     responseEntries.data = await duePaymentHistoryServices.createDuePaymentHistory(req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
-    }
+    // const validationResponse = await v.validate(req.body, schema)
+    // if (validationResponse != true) {
+    //   throw new Error(messages.VALIDATION_FAILED);
+    // }else{
+    // responseEntries.data = await duePaymentHistoryServices.createDuePaymentHistory(req.body);
+    // if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+    // }
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
@@ -50,16 +52,18 @@ async function createDuePaymentHistory(req, res) {
 
 async function updateDuePaymentHistory(req, res) {
   const responseEntries = new ResponseEntry();
-  const v = new Validator()
+  // const v = new Validator()
   try {
-    const filteredSchema = _.pick(schema, Object.keys(req.body));
-    const validationResponse = v.validate(req.body, filteredSchema)
-    if (validationResponse != true) {
-      throw new Error(messages.VALIDATION_FAILED);
-    }else{
-      responseEntries.data = await duePaymentHistoryServices.updateDuePaymentHistory(req.params.duePaymentHistoryId, req.body);
-      if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
-    }
+    responseEntries.data = await duePaymentHistoryServices.updateDuePaymentHistory(req.params.duePaymentHistoryId, req.body);
+    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+    // const filteredSchema = _.pick(schema, Object.keys(req.body));
+    // const validationResponse = v.validate(req.body, filteredSchema)
+    // if (validationResponse != true) {
+    //   throw new Error(messages.VALIDATION_FAILED);
+    // }else{
+    //   responseEntries.data = await duePaymentHistoryServices.updateDuePaymentHistory(req.params.duePaymentHistoryId, req.body);
+    //   if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+    // }
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;

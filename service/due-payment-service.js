@@ -56,7 +56,7 @@ async function createDuePayment(postData) {
 async function updateDuePayment(duePaymentId, putData) {
     try {
         const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
-        const duePaymentResult = await sequelize.models.due_payment.update(excuteMethod, { where: { duePayment_id: duePaymentId } });
+        const duePaymentResult = await sequelize.models.due_payment.update(excuteMethod, { where: { due_payment_id: duePaymentId } });
         const req = {
             duePaymentId: duePaymentId
         }

@@ -34,10 +34,11 @@ async function getLoan(query) {
       }
     }
     const result = await sequelize.query(
-      `SELECT l.loan_id "loanId",
+      `SELECT l.loan_id "loanId",a.applicant_code "applicantCode",a.contact_no "contactNo" ,
         l.applicant_id "applicantId",CONCAT(a.first_name,' ',a.last_name) as "applicantName" ,
         l.guarantor_id "guarantorId", CONCAT(a3.first_name,' ',a3.last_name) as "guarantorName" ,
         l.application_no "applicationNo",
+        l.category_id "categoryId", c.category_name "categoryName",
         l.loan_amount "loanAmount",
         l.created_by "createdById",CONCAT(e.first_name,' ',e.last_name) as createdBy,
         l.loan_status_id "loanStatusId",ls.loan_status_name "loanStatusName",
@@ -46,6 +47,7 @@ async function getLoan(query) {
         left join applicants a on a.applicant_id = l.applicant_id 
         left join applicants a3 on a3.applicant_id = l.guarantor_id  
         left join employee e on e.employee_id = l.created_by 
+        left join categories c on c.category_id = l.category_id 
         left join loan_status ls on ls.loan_status_id = l.loan_status_id ${iql} `,
       {
         type: QueryTypes.SELECT,

@@ -19,14 +19,17 @@ async function getDuePaymentHistory(query) {
       if (query.isActive) {
         iql += count >= 1 ? ` AND` : ``;
         count++;
-        iql += ` emp.is_active = ${query.isActive}`;
+        iql += ` is_active = ${query.isActive}`;
       }
     }
-    const result = await sequelize.query(`SELECT * FROM due_payment_history ${iql}`, {
-          type: QueryTypes.SELECT,
-          raw: true,
-          nest: false
-        });
+    const result = await sequelize.query(`SELECT due_payment_history_id "duePaymentHistoryId", due_payment_id "duePaymentId",
+          paid_amount "paidAmount", balance_amount "balanceAmount", created_by "createdBy",
+          paid_date "paidDate", fine_amount "fineAmount", createdAt, updatedAt
+          FROM due_payment_histories ${iql}`, {
+      type: QueryTypes.SELECT,
+      raw: true,
+      nest: false
+    });
     return result;
   } catch (error) {
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
@@ -54,9 +57,9 @@ async function updateDuePaymentHistory(duePaymentHistoryId, putData) {
       duePaymentHistoryId: duePaymentHistoryId
     }
     return await getDuePaymentHistory(req);
-} catch (error) {
-  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
-}
+  } catch (error) {
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
+  }
 }
 
 
