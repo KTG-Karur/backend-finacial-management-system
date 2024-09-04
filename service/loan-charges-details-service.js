@@ -33,25 +33,41 @@ async function getLoanChargesDetails(query) {
 
 async function createLoanChargesDetails(postData) {
   try {
-    const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
-    const loanChargesDetailsResult = await sequelize.models.loan_charges_details.create(excuteMethod);
+    const excuteMethod = _.map(postData, (item) => _.mapKeys(item, (value, key) => _.snakeCase(key)));
+    const loanChargesDetailsResult = await sequelize.models.loan_charges_details.bulkCreate(excuteMethod);
     const req = {
       loanChargesDetailsId: loanChargesDetailsResult.loan_charges_details_id
     }
     return await getLoanChargesDetails(req);
   } catch (error) {
+    console.log(error)
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
 async function updateLoanChargesDetails(loanChargesDetailsId, putData) {
   try {
-    const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
-    const loanChargesDetailsResult = await sequelize.models.loan_charges_details.update(excuteMethod, { where: { loan_charges_details_id: loanChargesDetailsId } });
-    const req = {
-      loanChargesDetailsId: loanChargesDetailsId
+    if(_.isArray(putData)){
+      let loanChargesResult = "";
+      _.forEach(putData, async function (item, index) {
+          const excuteMethod = _.mapKeys(item, (value, key) => _.snakeCase(key))
+          const updateId = item?.loanChargesDetailsId || null
+          if (updateId != null) {
+              delete item.loan_charges_details_id;
+              loanChargesResult = await sequelize.models.loan_charges_details.update(excuteMethod, { where: { loan_charges_details_id: updateId } });
+          } else {
+            loanChargesResult = await sequelize.models.loan_charges_details.create(excuteMethod);
+          }
+      });
+      return true;
+    }else{
+      const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
+      const loanChargesDetailsResult = await sequelize.models.loan_charges_details.update(excuteMethod, { where: { loan_charges_details_id: loanChargesDetailsId } });
+      const req = {
+        loanChargesDetailsId: loanChargesDetailsId
+      }
+      return await getLoanChargesDetails(req);
     }
-    return await getLoanChargesDetails(req);
 } catch (error) {
   throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
 }

@@ -34,5 +34,7 @@ module.exports = function routesPlugin(fastify, opts, next) {
   fastify.register(require('./income-entry-route'));
   fastify.register(require('./expense-entry-route'));
   fastify.register(require('./loan-charges-type-route'));
+  fastify.register(require('./due-payment-route'));
+  fastify.register(require('./due-payment-history'));
   next();
 };

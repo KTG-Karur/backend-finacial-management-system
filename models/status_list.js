@@ -3,29 +3,31 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class loan_charges_details extends Model {
+  class status_list extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // status_list.belongsTo(models.status_category, {
+      //   foreignKey: 'status_category_id',
+      //   onDelete: 'CASCADE'
+      // });
     }
   }
-  loan_charges_details.init({
-    loan_charges_details_id: {
+  status_list.init({
+    status_list_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    loan_id: DataTypes.INTEGER,
-    loan_charge_id: DataTypes.INTEGER,
-    charge_amount: DataTypes.STRING,
+    status_category_id: DataTypes.INTEGER,
+    status_name: DataTypes.STRING,
     is_active: DataTypes.BOOLEAN
   }, {
     sequelize,
-    modelName: 'loan_charges_details',
+    modelName: 'status_list',
   });
-  return loan_charges_details;
+  return status_list;
 };

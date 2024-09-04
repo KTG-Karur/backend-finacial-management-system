@@ -3,30 +3,35 @@
 const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
+const moment = require('moment');
 const { QueryTypes } = require('sequelize');
+const { createDuePayment } = require('./due-payment-service');
+const { createBankAccount } = require('./bank-account-service');
+const { createLoanChargesDetails, updateLoanChargesDetails } = require('./loan-charges-details-service');
+const { generateSerialNumber } = require('../utils/utility');
 
 async function getLoan(query) {
   try {
     let iql = "";
-        let count = 0;
-        if (query && Object.keys(query).length) {
-            iql += `WHERE`;
-            if (query.loanId) {
-                iql += count >= 1 ? ` AND` : ``;
-                count++;
-                iql += ` l.loan_id = ${query.loanId}`;
-            }
-            if (query.loanStatusId) {
-                iql += count >= 1 ? ` AND` : ``;
-                count++;
-                iql += ` l.loan_status_id = ${query.loanStatusId}`;
-            }
-            if (query.isActive) {
-                iql += count >= 1 ? ` AND` : ``;
-                count++;
-                iql += ` l.is_active = ${query.isActive}`;
-            }
-        }
+    let count = 0;
+    if (query && Object.keys(query).length) {
+      iql += `WHERE`;
+      if (query.loanId) {
+        iql += count >= 1 ? ` AND` : ``;
+        count++;
+        iql += ` l.loan_id = ${query.loanId}`;
+      }
+      if (query.loanStatusId) {
+        iql += count >= 1 ? ` AND` : ``;
+        count++;
+        iql += ` l.loan_status_id = ${query.loanStatusId}`;
+      }
+      if (query.isActive) {
+        iql += count >= 1 ? ` AND` : ``;
+        count++;
+        iql += ` l.is_active = ${query.isActive}`;
+      }
+    }
     const result = await sequelize.query(
       `SELECT l.loan_id "loanId",
         l.applicant_id "applicantId",CONCAT(a.first_name,' ',a.last_name) as "applicantName" ,
@@ -55,25 +60,25 @@ async function getLoan(query) {
 async function getLoanDetails(query) {
   try {
     let iql = "";
-        let count = 0;
-        if (query && Object.keys(query).length) {
-            iql += `WHERE`;
-            if (query.loanId) {
-                iql += count >= 1 ? ` AND` : ``;
-                count++;
-                iql += ` l.loan_id = ${query.loanId}`;
-            }
-            if (query.loanStatusId) {
-              iql += count >= 1 ? ` AND` : ``;
-              count++;
-              iql += ` l.loan_status_id = ${query.loanStatusId}`;
-          }
-            if (query.isActive) {
-                iql += count >= 1 ? ` AND` : ``;
-                count++;
-                iql += ` l.is_active = ${query.isActive}`;
-            }
-        }
+    let count = 0;
+    if (query && Object.keys(query).length) {
+      iql += `WHERE`;
+      if (query.loanId) {
+        iql += count >= 1 ? ` AND` : ``;
+        count++;
+        iql += ` l.loan_id = ${query.loanId}`;
+      }
+      if (query.loanStatusId) {
+        iql += count >= 1 ? ` AND` : ``;
+        count++;
+        iql += ` l.loan_status_id = ${query.loanStatusId}`;
+      }
+      if (query.isActive) {
+        iql += count >= 1 ? ` AND` : ``;
+        count++;
+        iql += ` l.is_active = ${query.isActive}`;
+      }
+    }
     const result = await sequelize.query(
       `SELECT l.loan_id "loanId",l.applicant_id "applicantId",CONCAT(a.first_name,' ',a.last_name) as "applicantName" ,
       l.co_applicant_id "coApplicantId",CONCAT(a2.first_name,' ',a2.last_name) as "coApplicantName" ,
@@ -129,8 +134,28 @@ async function getLoanDetails(query) {
 
 async function createLoan(postData) {
   try {
+    // if(postData.bankDetailsInfo.length > 0){
+    //   const bankData = postData.bankDetailsInfo[0]
+    //   const bankRes = await createBankAccount(bankData)
+    //   postData.bankAccountId = bankRes.bankAccountId
+    // }
+
+    const countResult = await sequelize.query(
+      `SELECT application_no "applicantNo" FROM loans
+      ORDER BY loan_id DESC LIMIT 1`,
+      {
+        type: QueryTypes.SELECT,
+        raw: true,
+        nest: false
+      });
+    const applicationCodeFormat = `HFC-${moment().format('YY')}${moment().add(1, 'y').format('YY')}-FL-`
+    const count = countResult.length > 0 ? parseInt(countResult[0].applicantNo.split("-").pop()) : `00000`
+    postData.applicationNo = await generateSerialNumber(applicationCodeFormat, count)
+
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const loanResult = await sequelize.models.loan.create(excuteMethod);
+    const loanChargesData = postData.loanChargesInfo.map(v => ({ ...v, loanId: loanResult.loan_id }))
+    const loanCharges = await createLoanChargesDetails(loanChargesData)
     const req = {
       loanId: loanResult.loan_id
     }
@@ -143,8 +168,13 @@ async function createLoan(postData) {
 
 async function updateLoan(loanId, putData) {
   try {
+    if (putData.loanStatusId === 4) {
+      const duePaymentRes = await createDuePayment(putData.duePayment)
+    }
     const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
     const loanResult = await sequelize.models.loan.update(excuteMethod, { where: { loan_id: loanId } });
+    const loanChargesData = putData.loanChargesInfo.map(v => ({ ...v, loanId: loanId }))
+    const loanCharges = await updateLoanChargesDetails(null, loanChargesData)
     const req = {
       loanId: loanId
     }

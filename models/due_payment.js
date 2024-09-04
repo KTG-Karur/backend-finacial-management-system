@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class loan_charges_details extends Model {
+  class due_payment extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,19 +13,25 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  loan_charges_details.init({
-    loan_charges_details_id: {
+  due_payment.init({
+    due_payment_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
     loan_id: DataTypes.INTEGER,
-    loan_charge_id: DataTypes.INTEGER,
-    charge_amount: DataTypes.STRING,
-    is_active: DataTypes.BOOLEAN
+    total_amount: DataTypes.STRING,
+    paid_amount: DataTypes.STRING,
+    balance_amount: DataTypes.STRING,
+    due_amount: DataTypes.STRING,
+    due_start_date: DataTypes.DATE,
+    due_end_date: DataTypes.DATE,
+    is_force_close: DataTypes.BOOLEAN,
+    force_close_date: DataTypes.DATE,
+    loan_due_status_id: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'loan_charges_details',
+    modelName: 'due_payment',
   });
-  return loan_charges_details;
+  return due_payment;
 };

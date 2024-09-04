@@ -29,7 +29,7 @@ async function getApplicant(query) {
             }
         }
         const result = await sequelize.query(`SELECT a.applicant_id "applicantId", a.applicant_code "applicantCode", 
-            CONCAT(a.first_name,' ' ,a.last_name) as applicantName,at2.applicant_type_name "applicantTypeName",
+            CONCAT(a.first_name,' ' ,a.last_name) as applicantName,CONCAT(a.first_name,' ',a.last_name,'-',a.applicant_code) as applicantNameCode,at2.applicant_type_name "applicantTypeName",
             a.contact_no "contactNo" , g.gender_name "genderName", a.createdAt, a.updatedAt
             FROM applicants a
             left join gender g on g.gender_id = a.gender_id 

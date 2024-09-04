@@ -5,56 +5,29 @@ const { verifyToken } = require("../middleware/auth");
 const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
-const loanServices = require("../service/loan-service");
+const duePaymentHistoryServices = require("../service/due-payment-history-service");
 const _ = require('lodash');
 
 const schema = {
-    applicantId: "number|required|integer|positive",
-    coApplicantId: "number|required|integer|positive",
-    guarantorId: "number|required|integer|positive",
-    categoryId: "number|required|integer|positive",
-    subCategoryId: "number|required|integer|positive",
-    interestRate: "number|required|integer|positive",
-    // dueTypeId: "number|required|integer|positive",
-    loanAmount: { type: "string", optional: false, min:1, max: 100 },
-    dueAmount: { type: "string", optional: false, min:1, max: 100 },
-    // dueDate: { type: "string", format: "date", optional: false, },
-    // disbursedDate: { type: "string", format: "date", optional: false, },
-    // disbursedAmount: { type: "string", optional: false, min:1, max: 100 },
-    disbursedMethodId: "number|required|integer|positive",
-    // bankAccountId: "number|required|integer|positive",
-    createdBy: "number|required|integer|positive",
+  duePaymentHistoryName: { type: "string", optional: false, min:1, max: 100 }
 }
 
-async function getLoan(req, res) {
+async function getDuePaymentHistory(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await loanServices.getLoan(req.query);
+    responseEntries.data = await duePaymentHistoryServices.getDuePaymentHistory(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
 }
 
-async function getLoanDetails(req, res) {
-  const responseEntries = new ResponseEntry();
-  try {
-    responseEntries.data = await loanServices.getLoanDetails(req.query);
-    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
-  } catch (error) {
-    responseEntries.error = true;
-    responseEntries.message = error.message ? error.message : error;
-    responseEntries.code = responseCode.BAD_REQUEST;
-  } finally {
-    res.send(responseEntries);
-  }
-}
-
-async function createLoan(req, res) {
+async function createDuePaymentHistory(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -62,19 +35,20 @@ async function createLoan(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-    responseEntries.data = await loanServices.createLoan(req.body);
+    responseEntries.data = await duePaymentHistoryServices.createDuePaymentHistory(req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
 }
 
-async function updateLoan(req, res) {
+async function updateDuePaymentHistory(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -83,45 +57,38 @@ async function updateLoan(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-      responseEntries.data = await loanServices.updateLoan(req.params.loanId, req.body);
+      responseEntries.data = await duePaymentHistoryServices.updateDuePaymentHistory(req.params.duePaymentHistoryId, req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
     responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
   } finally {
     res.send(responseEntries);
   }
 }
 
-
 module.exports = async function (fastify) {
   fastify.route({
     method: 'GET',
-    url: '/loan',
+    url: '/due-payment-history',
     preHandler: verifyToken,
-    handler: getLoan
-  });
-
-  fastify.route({
-    method: 'GET',
-    url: '/loan-details',
-    preHandler: verifyToken,
-    handler: getLoanDetails
+    handler: getDuePaymentHistory
   });
 
   fastify.route({
     method: 'POST',
-    url: '/loan',
+    url: '/due-payment-history',
     preHandler: verifyToken,
-    handler: createLoan
+    handler: createDuePaymentHistory
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/loan/:loanId',
+    url: '/due-payment-history/:duePaymentHistoryId',
     preHandler: verifyToken,
-    handler: updateLoan
+    handler: updateDuePaymentHistory
   });
 };
