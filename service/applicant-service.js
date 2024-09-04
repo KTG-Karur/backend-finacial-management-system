@@ -64,36 +64,96 @@ async function getApplicantInfoDetails(query) {
             }
         }
         const result = await sequelize.query(`SELECT 
-        a.applicant_id AS "applicantId",
-        JSON_OBJECT('applicantCode', a.applicant_code, 'firstName', a.first_name,
-        'lastName', a.last_name, 'dob' , a.dob, 'contactNo', a.contact_no, 'alternativeContactNo',
-        a.alternative_contact_no, 'email', a.email,'genderId', a.gender_id, 'qualification', a.qualification,
-        'martialStatusId', a.martial_status_id) as personalInfo,
-        JSON_OBJECT('applicantIncomeInfoId', aii.applicant_income_info_id, 'applicantTypeId', aii.applicant_type_id,
-        'companyName', aii.company_name,'address', aii.address,
-        'officeContactNo', aii.office_contact_no,'monthlyIncome', aii.monthly_income) as incomeInfo,
-        JSON_OBJECT('applicantDetailsId', ad.applicant_details_id, 'fatherName', ad.father_name,
-        'motherName', ad.mother_name,'fatherOccupation', ad.father_occupation,
-        'fatherIncome', ad.father_income,'motherOccupation', ad.mother_occupation, 'motherIncome', ad.mother_income,
-        'fatherContactNo', ad.father_contact_no, 'motherContactNo', ad.mother_contact_no
-        ) as additionalInfo,
-        CONCAT('[', GROUP_CONCAT(JSON_OBJECT('applicantProofId',ap.applicant_proof_id, 'proofNo', ap.proof_no,'proofTypeId', ap.proof_type_id,'imageName', ap.image_name ) SEPARATOR ','), ']') AS "idProof",
-        CONCAT('[', GROUP_CONCAT(JSON_OBJECT('applicantAddressInfoId',aai.applicant_address_info_id, 'addressTypeId', aai.address_type_id,
-        'address', aai.address,'landmark',aai.landmark, 'districtId', aai.district_id, 'stateId', aai.state_id,
-        'pincode', pincode) SEPARATOR ','), ']') AS "addressInfo"
-        FROM 
-            applicants a
-        LEFT JOIN 
-            applicant_proof ap ON ap.applicant_id = a.applicant_id
-        LEFT JOIN 
-            applicant_address_infos aai ON aai.applicant_id = a.applicant_id
-        LEFT JOIN 
-            applicant_income_info aii ON aii.applicant_id = a.applicant_id
-        LEFT JOIN 
-            applicant_details ad ON ad.applicant_id = a.applicant_id
-        GROUP BY 
-            a.applicant_id, 
-            a.applicant_code; ${iql}`, {
+    a.applicant_id AS "applicantId",
+    JSON_OBJECT(
+        'applicantCode', a.applicant_code, 
+        'firstName', a.first_name,
+        'lastName', a.last_name, 
+        'dob', IFNULL(a.dob, ''), 
+        'contactNo', a.contact_no, 
+        'alternativeContactNo', IFNULL(a.alternative_contact_no, ''),
+        'email', IFNULL(a.email, ''),
+        'genderId', a.gender_id, 
+        'qualification', IFNULL(a.qualification, ''),
+        'martialStatusId', IFNULL(a.martial_status_id, '')
+    ) AS personalInfo,
+    
+    JSON_OBJECT(
+        'applicantIncomeInfoId', aii.applicant_income_info_id, 
+        'applicantTypeId', aii.applicant_type_id,
+        'companyName', aii.company_name,
+        'address', aii.address,
+        'officeContactNo', aii.office_contact_no,
+        'monthlyIncome', aii.monthly_income
+    ) AS incomeInfo,
+    
+    JSON_OBJECT(
+        'applicantDetailsId', ad.applicant_details_id, 
+        'fatherName', IFNULL(ad.father_name, ''),
+        'motherName', IFNULL(ad.mother_name, ''),
+        'fatherOccupation', IFNULL(ad.father_occupation, ''),
+        'fatherIncome', IFNULL(ad.father_income, ''),
+        'motherOccupation', IFNULL(ad.mother_occupation, ''),
+        'motherIncome', IFNULL(ad.mother_income, ''),
+        'fatherContactNo', IFNULL(ad.father_contact_no, ''),
+        'motherContactNo', IFNULL(ad.mother_contact_no, '')
+    ) AS additionalInfo,
+    
+    CONCAT(
+        '[', 
+        GROUP_CONCAT(
+            JSON_OBJECT(
+                'applicantProofId', ap.applicant_proof_id, 
+                'proofNo', ap.proof_no,
+                'proofTypeId', ap.proof_type_id,
+                'proofTypeName', apt.proof_type_name,
+                'imageName', IFNULL(ap.image_name, '')
+            ) SEPARATOR ','
+        ), 
+        ']'
+    ) AS "idProof",
+    
+    CONCAT(
+        '[', 
+        GROUP_CONCAT(
+            JSON_OBJECT(
+                'applicantAddressInfoId', aai.applicant_address_info_id, 
+                'addressTypeId', aai.address_type_id,
+                'addressTypeName', at2.address_type_name,
+                'address', aai.address,
+                'landmark', IFNULL(aai.landmark, ''), 
+                'districtId', aai.district_id, 
+                'districtName', d.district_name,
+                'stateId', aai.state_id,
+                'stateName', s.state_name,
+                'pincode', IFNULL(aai.pincode, '')
+            ) SEPARATOR ','
+        ), 
+        ']'
+    ) AS "addressInfo"
+FROM 
+    applicants a
+LEFT JOIN 
+    applicant_proof ap ON ap.applicant_id = a.applicant_id
+LEFT JOIN 
+    applicant_address_infos aai ON aai.applicant_id = a.applicant_id
+LEFT JOIN 
+    applicant_income_info aii ON aii.applicant_id = a.applicant_id
+LEFT JOIN 
+    applicant_details ad ON ad.applicant_id = a.applicant_id
+LEFT JOIN 
+    applicant_proof_type apt ON apt.applicant_proof_type_id = ap.proof_type_id
+LEFT JOIN 
+    address_types at2 ON at2.address_type_id = aai.address_type_id
+LEFT JOIN 
+    states s ON s.state_id = aai.state_id
+LEFT JOIN 
+    district d ON d.district_id = aai.district_id ${iql}
+GROUP BY 
+    a.applicant_id, 
+    a.applicant_code;
+;
+            `, {
             type: QueryTypes.SELECT,
             raw: true,
             nest: false,
