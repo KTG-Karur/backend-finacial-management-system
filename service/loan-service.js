@@ -11,6 +11,7 @@ const { createLoanChargesDetails, updateLoanChargesDetails } = require('./loan-c
 const { generateSerialNumber } = require('../utils/utility');
 
 async function getLoan(query) {
+  console.log("in--->")
   try {
     let iql = "";
     let count = 0;
@@ -53,7 +54,8 @@ async function getLoan(query) {
       });
     return result;
   } catch (error) {
-    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
+    console.log(error)
+    throw new Error(error?.errors[0]?.message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
@@ -169,17 +171,21 @@ async function createLoan(postData) {
 async function updateLoan(loanId, putData) {
   try {
     if (putData.loanStatusId === 4) {
-      const duePaymentRes = await createDuePayment(putData.duePayment)
+      const duePaymentRes = await createDuePayment(putData.duePaymentInfo)
     }
     const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
     const loanResult = await sequelize.models.loan.update(excuteMethod, { where: { loan_id: loanId } });
-    const loanChargesData = putData.loanChargesInfo.map(v => ({ ...v, loanId: loanId }))
-    const loanCharges = await updateLoanChargesDetails(null, loanChargesData)
+    const loanChargesInfo = putData?.loanChargesInfo || []
+    if(loanChargesInfo.length > 0){
+      const loanChargesData = putData.loanChargesInfo.map(v => ({ ...v, loanId: loanId }))
+      const loanCharges = await updateLoanChargesDetails(null, loanChargesData)
+    }
     const req = {
       loanId: loanId
     }
     return await getLoan(req);
   } catch (error) {
+    console.log(error)
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
