@@ -75,8 +75,7 @@ async function getLoanDetails(query) {
             }
         }
     const result = await sequelize.query(
-      `SELECT l.loan_id "loanId",
-      l.applicant_id "applicantId",CONCAT(a.first_name,' ',a.last_name) as "applicantName" ,
+      `SELECT l.loan_id "loanId",l.applicant_id "applicantId",CONCAT(a.first_name,' ',a.last_name) as "applicantName" ,
       l.co_applicant_id "coApplicantId",CONCAT(a2.first_name,' ',a2.last_name) as "coApplicantName" ,
       l.guarantor_id "guarantorId", CONCAT(a3.first_name,' ',a3.last_name) as "guarantorName" ,
       l.category_id "categoryId", c.category_name "categoryName",
@@ -89,8 +88,19 @@ async function getLoanDetails(query) {
       ba.branch_name "branchName",ba.account_no "accountNo",ba.ifsc_code "ifscCode",
       l.created_by "createdById",CONCAT(e.first_name,' ',e.last_name) as createdBy,
       l.approved_by "approvedById", CONCAT(e2.first_name,' ',e2.last_name) as approvedBy,
-      l.approved_date "approvedDate",
-      l.loan_status_id "loanStatusId",ls.loan_status_name "loanStatusName",
+       CONCAT(
+        '[', 
+        GROUP_CONCAT(
+            JSON_OBJECT(
+            'loanChargesDetailsId', lcd.loan_charges_details_id,
+                'loanChargeTypeId', lcd.loan_charge_id, 
+                'loanChargeTypeName', lc.loan_charges_name,
+                'chargeAmount', lcd.charge_amount
+            ) SEPARATOR ','
+        ), 
+        ']'
+    ) AS "loanCharges",
+      l.approved_date "approvedDate",l.loan_status_id "loanStatusId",ls.loan_status_name "loanStatusName",
       l.is_active "isActive", l.createdAt, l.updatedAt
       FROM loans l
       left join applicants a on a.applicant_id = l.applicant_id 
@@ -102,7 +112,10 @@ async function getLoanDetails(query) {
       left join bank_accounts ba on ba.bank_account_id = l.bank_account_id 
       left join employee e on e.employee_id = l.created_by 
       left join employee e2 on e2.employee_id = l.approved_by 
-      left join loan_status ls on ls.loan_status_id = l.loan_status_id  ${iql} `,
+      left join loan_status ls on ls.loan_status_id = l.loan_status_id
+      left join loan_charges_details lcd on lcd.loan_id = l.loan_id
+      left join loan_charges lc on lc.loan_charges_id = lcd.loan_charge_id   ${iql}
+      group by l.loan_id `,
       {
         type: QueryTypes.SELECT,
         raw: true,
