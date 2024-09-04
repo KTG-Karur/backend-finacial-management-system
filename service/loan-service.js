@@ -11,7 +11,6 @@ const { createLoanChargesDetails, updateLoanChargesDetails } = require('./loan-c
 const { generateSerialNumber } = require('../utils/utility');
 
 async function getLoan(query) {
-  console.log("in--->")
   try {
     let iql = "";
     let count = 0;
@@ -37,7 +36,7 @@ async function getLoan(query) {
       `SELECT l.loan_id "loanId",a.applicant_code "applicantCode",a.contact_no "contactNo" ,
         l.applicant_id "applicantId",CONCAT(a.first_name,' ',a.last_name) as "applicantName" ,
         l.guarantor_id "guarantorId", CONCAT(a3.first_name,' ',a3.last_name) as "guarantorName" ,
-        l.application_no "applicationNo",
+        l.application_no "applicationNo", l.tenure_period "tenurePeriod",
         l.category_id "categoryId", c.category_name "categoryName",
         l.loan_amount "loanAmount",
         l.created_by "createdById",CONCAT(e.first_name,' ',e.last_name) as createdBy,

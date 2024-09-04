@@ -22,12 +22,25 @@ async function getDuePayment(query) {
                 iql += ` dp.is_active = ${query.isActive}`;
             }
         }
-        const result = await sequelize.query(`SELECT dp.due_payment_id "duePaymentId", dp.loan_id "loanId",l.application_no "applicationNo",
-        l.loan_amount "loanAmount",dp.total_amount "totalAmount",dp.paid_amount "paidAmount", dp.balance_amount "balanceAmount", dp.due_amount "dueAmount",
-        dp.due_start_date "dueStartDate", dp.due_end_date "dueEndDate", dp.is_force_close "isForceClose",
-        dp.force_close_date "forceCloseDate", dp.loan_due_status_id "loanDueStatusId", dp.createdAt, dp.updatedAt
-        FROM due_payments dp
-        left join loans l on l.loan_id = dp.loan_id ${iql}`, {
+        // const result = await sequelize.query(`SELECT dp.due_payment_id "duePaymentId", dp.loan_id "loanId",l.application_no "applicationNo",
+        // l.loan_amount "loanAmount",dp.total_amount "totalAmount",dp.paid_amount "paidAmount", dp.balance_amount "balanceAmount", dp.due_amount "dueAmount",
+        // dp.due_start_date "dueStartDate", dp.due_end_date "dueEndDate", dp.is_force_close "isForceClose",
+        // dp.force_close_date "forceCloseDate", dp.loan_due_status_id "loanDueStatusId", dp.createdAt, dp.updatedAt
+        // FROM due_payments dp
+        // left join loans l on l.loan_id = dp.loan_id ${iql}`, {
+        //     type: QueryTypes.SELECT,
+        //     raw: true,
+        //     nest: false
+        // });
+        const result = await sequelize.query(`SELECT dph.due_payment_history_id "duePaymentHistoryId",
+            dph.due_payment_id "duePaymentId",l.application_no "applicationNo",dp.due_amount "dueAmount",
+            a.applicant_code "applicantCode",CONCAT(a.first_name,' ',a.last_name) as applicantName,
+            a.contact_no "contactNo",dph.payment_status_id "paymentStatusId", sl.status_name "paymentStatusName"
+            FROM due_payment_histories dph
+            left join due_payments dp on dp.due_payment_id = dph.due_payment_id
+            left join loans l on l.loan_id = dp.loan_id
+            left join applicants a on a.applicant_id = l.applicant_id
+            left join status_lists sl on sl.status_list_id = dph.payment_status_id ${iql}`, {
             type: QueryTypes.SELECT,
             raw: true,
             nest: false
