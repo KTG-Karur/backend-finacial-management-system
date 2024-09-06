@@ -13,6 +13,12 @@ module.exports = {
       {
         status_category_name: "Payment Status"
       },
+      {
+        status_category_name: "Day Book Category"
+      },
+      {
+        status_category_name: "Day Book Sub-Category"
+      },
     ]);
   },
 

@@ -52,6 +52,7 @@ async function createDuePaymentHistory(postData) {
 async function updateDuePaymentHistory(duePaymentHistoryId, putData) {
   try {
     const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
+    console.log(excuteMethod)
     const duePaymentHistoryResult = await sequelize.models.due_payment_history.update(excuteMethod, { where: { due_payment_history_id: duePaymentHistoryId } });
     const req = {
       duePaymentHistoryId: duePaymentHistoryId

@@ -4,6 +4,7 @@ const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
 const { QueryTypes } = require('sequelize');
+const { updateDuePaymentHistory } = require('./due-payment-history-service');
 
 async function getDuePayment(query) {
     try {
@@ -15,6 +16,11 @@ async function getDuePayment(query) {
                 iql += count >= 1 ? ` AND` : ``;
                 count++;
                 iql += ` dp.due_payment_id = ${query.duePaymentId}`;
+            }
+            if (query.categoryId) {
+                iql += count >= 1 ? ` AND` : ``;
+                count++;
+                iql += ` l.category_id = ${query.categoryId}`;
             }
             if (query.isActive) {
                 iql += count >= 1 ? ` AND` : ``;
@@ -34,7 +40,8 @@ async function getDuePayment(query) {
         // });
         const result = await sequelize.query(`SELECT dph.due_payment_history_id "duePaymentHistoryId",
             dph.due_payment_id "duePaymentId",l.application_no "applicationNo",dp.due_amount "dueAmount",
-            a.applicant_code "applicantCode",CONCAT(a.first_name,' ',a.last_name) as applicantName,
+            dp.paid_amount "totalPaidAmount", dp.total_amount "totalAmount",l.category_id "categoryId",
+            a.applicant_code "applicantCode",CONCAT(a.first_name,' ',a.last_name) as applicantName,dph.due_date "dueDate",
             a.contact_no "contactNo",dph.payment_status_id "paymentStatusId", sl.status_name "paymentStatusName"
             FROM due_payment_histories dph
             left join due_payments dp on dp.due_payment_id = dph.due_payment_id
@@ -70,6 +77,10 @@ async function updateDuePayment(duePaymentId, putData) {
     try {
         const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
         const duePaymentResult = await sequelize.models.due_payment.update(excuteMethod, { where: { due_payment_id: duePaymentId } });
+        const infoData = putData.duePaymentHistoryInfo 
+        const updateId = infoData.duePaymentHistoryId
+        delete infoData.duePaymentHistoryId
+        const duePaymentHistory = await updateDuePaymentHistory(updateId, infoData)
         const req = {
             duePaymentId: duePaymentId
         }

@@ -36,6 +36,26 @@ module.exports = {
         status_category_id : 3,
         status_name: "Un-Paid"
       },
+      {
+        status_category_id : 4,
+        status_name: "Income"
+      },
+      {
+        status_category_id : 4,
+        status_name: "Expense"
+      },
+      {
+        status_category_id : 5,
+        status_name: "Due Payment"
+      },
+      {
+        status_category_id : 5,
+        status_name: "Loan Payment"
+      },
+      {
+        status_category_id : 5,
+        status_name: "Entry Payment"
+      },
     ]);
   },
 
