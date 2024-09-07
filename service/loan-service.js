@@ -184,6 +184,8 @@ async function updateLoan(loanId, putData) {
     const req = {
       loanId: loanId
     }
+    console.log("req in loan-service");
+    console.log(req);
     return await getLoan(req);
   } catch (error) {
     console.log(error)

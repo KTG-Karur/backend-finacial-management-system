@@ -69,6 +69,20 @@ async function updateLoanChargesDetails(req, res) {
   }
 }
 
+async function deleteLoanChargesDetails(req, res) {
+  const responseEntries = new ResponseEntry();
+  try {
+    responseEntries.data = await loanChargesDetailsServices.deleteLoanChargesDetails(req.params.loanChargesDetailsId);
+    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+  } catch (error) {
+    responseEntries.error = true;
+    responseEntries.message = error.message ? error.message : error;
+    responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+  } finally {
+    res.send(responseEntries);
+  }
+}
+
 module.exports = async function (fastify) {
   fastify.route({
     method: 'GET',
@@ -89,6 +103,13 @@ module.exports = async function (fastify) {
     url: '/loan-charges-details/:loanChargesDetailsId',
     preHandler: verifyToken,
     handler: updateLoanChargesDetails
+  });
+
+  fastify.route({
+    method: 'DELETE',
+    url: '/loan-charges-details/:loanChargesDetailsId',
+    preHandler: verifyToken,
+    handler: deleteLoanChargesDetails
   });
 
 };
