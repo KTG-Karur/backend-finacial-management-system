@@ -25,7 +25,7 @@ module.exports = function routesPlugin(fastify, opts, next) {
   fastify.register(require('./address-type-route'));
   fastify.register(require('./applicant-route'));
   fastify.register(require('./applicant-details-route'));
-  fastify.register(require('./applicant-address-info-route'));
+  fastify.register(require('./applicant-address-info-route')); 
   fastify.register(require('./applicant-income-route'));
   fastify.register(require('./applicant-proof-route'));
   fastify.register(require('./bank-account-route'));
