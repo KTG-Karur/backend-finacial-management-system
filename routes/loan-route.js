@@ -9,21 +9,21 @@ const loanServices = require("../service/loan-service");
 const _ = require('lodash');
 
 const schema = {
-    applicantId: "number|required|integer|positive",
-    coApplicantId: "number|required|integer|positive",
-    guarantorId: "number|required|integer|positive",
-    categoryId: "number|required|integer|positive",
-    subCategoryId: "number|required|integer|positive",
-    interestRate: "number|required|integer|positive",
-    // dueTypeId: "number|required|integer|positive",
-    loanAmount: { type: "string", optional: false, min:1, max: 100 },
-    dueAmount: { type: "string", optional: false, min:1, max: 100 },
-    // dueDate: { type: "string", format: "date", optional: false, },
-    // disbursedDate: { type: "string", format: "date", optional: false, },
-    // disbursedAmount: { type: "string", optional: false, min:1, max: 100 },
-    disbursedMethodId: "number|required|integer|positive",
-    // bankAccountId: "number|required|integer|positive",
-    createdBy: "number|required|integer|positive",
+  applicantId: "number|required|integer|positive",
+  coApplicantId: "number|required|integer|positive",
+  guarantorId: "number|required|integer|positive",
+  categoryId: "number|required|integer|positive",
+  // subCategoryId: "number|required|integer|positive",
+  interestRate: "number|required|integer|positive",
+  // dueTypeId: "number|required|integer|positive",
+  loanAmount: { type: "string", optional: false, min: 1, max: 100 },
+  // dueAmount: { type: "string", optional: false, min: 1, max: 100 },
+  // dueDate: { type: "string", format: "date", optional: false, },
+  // disbursedDate: { type: "string", format: "date", optional: false, },
+  // disbursedAmount: { type: "string", optional: false, min:1, max: 100 },
+  disbursedMethodId: "number|required|integer|positive",
+  // bankAccountId: "number|required|integer|positive",
+  createdBy: "number|required|integer|positive",
 }
 
 async function getLoan(req, res) {
@@ -57,13 +57,17 @@ async function getLoanDetails(req, res) {
 async function createLoan(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
+  console.log("req.body")
+  console.log(req.body)
   try {
     const validationResponse = await v.validate(req.body, schema)
+    console.log("validationResponse")
+    console.log(validationResponse)
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
-    }else{
-    responseEntries.data = await loanServices.createLoan(req.body);
-    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+    } else {
+      responseEntries.data = await loanServices.createLoan(req.body);
+      if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
     responseEntries.error = true;
@@ -82,7 +86,7 @@ async function updateLoan(req, res) {
     const validationResponse = v.validate(req.body, filteredSchema)
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
-    }else{
+    } else {
       responseEntries.data = await loanServices.updateLoan(req.params.loanId, req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }

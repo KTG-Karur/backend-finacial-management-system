@@ -73,9 +73,23 @@ async function updateLoanChargesDetails(loanChargesDetailsId, putData) {
 }
 }
 
+async function deleteLoanChargesDetails(loanChargesDetailsId) {
+  try {
+    const loanChargesDetailsResult = await sequelize.models.loan_charges_details.destroy({ where: { loan_charges_details_id: loanChargesDetailsId } });
+    if(loanChargesDetailsResult == 1){
+      return "Deleted Successfully...!";
+    }else{
+      return "Data Not Founded...!";
+    }
+} catch (error) {
+  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
+}
+}
+
 
 module.exports = {
   getLoanChargesDetails,
   updateLoanChargesDetails,
-  createLoanChargesDetails
+  createLoanChargesDetails,
+  deleteLoanChargesDetails
 };
