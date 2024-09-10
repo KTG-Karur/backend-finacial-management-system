@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     gender_id: DataTypes.INTEGER,
     qualification: DataTypes.STRING,
     is_active: DataTypes.BOOLEAN,
+    is_borrower: DataTypes.BOOLEAN,
     martial_status_id: DataTypes.INTEGER
   }, {
     sequelize,

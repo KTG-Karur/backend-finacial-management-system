@@ -44,6 +44,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      is_borrower: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: 0
+      },
       is_active: {
         allowNull: false,
         type: Sequelize.BOOLEAN,

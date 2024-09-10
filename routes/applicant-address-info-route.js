@@ -81,6 +81,20 @@ async function updateApplicantAddress(req, res) {
     }
 }
 
+async function deleteApplicantAddress(req, res) {
+    const responseEntries = new ResponseEntry();
+    try {
+      responseEntries.data = await applicantAddressServices.deleteApplicantAddress(req.params.applicantAddressInfoId);
+      if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+    } catch (error) {
+      responseEntries.error = true;
+      responseEntries.message = error.message ? error.message : error;
+      responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    } finally {
+      res.send(responseEntries);
+    }
+  }
+
 module.exports = async function (fastify) {
     fastify.route({
         method: 'GET',
@@ -102,4 +116,11 @@ module.exports = async function (fastify) {
         preHandler: verifyToken,
         handler: updateApplicantAddress
     });
+
+    fastify.route({
+        method: 'DELETE',
+        url: '/applicant-address/:applicantAddressInfoId',
+        preHandler: verifyToken,
+        handler: deleteApplicantAddress
+      });
 };

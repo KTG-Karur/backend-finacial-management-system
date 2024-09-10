@@ -73,6 +73,20 @@ async function updateApplicantProof(req, res) {
     }
 }
 
+async function deleteApplicantProof(req, res) {
+    const responseEntries = new ResponseEntry();
+    try {
+      responseEntries.data = await applicantProofServices.deleteApplicantProof(req.params.applicantProofId);
+      if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+    } catch (error) {
+      responseEntries.error = true;
+      responseEntries.message = error.message ? error.message : error;
+      responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
+    } finally {
+      res.send(responseEntries);
+    }
+  }
+
 
 module.exports = async function (fastify) {
     fastify.route({
@@ -95,4 +109,11 @@ module.exports = async function (fastify) {
         preHandler: verifyToken,
         handler: updateApplicantProof
     });
+
+    fastify.route({
+        method: 'DELETE',
+        url: '/applicant-proof/:applicantProofId',
+        preHandler: verifyToken,
+        handler: deleteApplicantProof
+      });
 };

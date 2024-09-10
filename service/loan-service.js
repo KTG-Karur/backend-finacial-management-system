@@ -38,7 +38,7 @@ async function getLoan(query) {
         l.guarantor_id "guarantorId", CONCAT(a3.first_name,' ',a3.last_name) as "guarantorName" ,
         l.application_no "applicationNo", l.tenure_period "tenurePeriod",l.due_amount "dueAmount",
         l.category_id "categoryId", c.category_name "categoryName",l.interest_rate "interestRate",
-        l.loan_amount "loanAmount",
+        l.loan_amount "loanAmount",a.contact_no "contactNo",
         l.created_by "createdById",CONCAT(e.first_name,' ',e.last_name) as createdBy,
         l.loan_status_id "loanStatusId",ls.loan_status_name "loanStatusName",
         l.is_active "isActive", l.createdAt

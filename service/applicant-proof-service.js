@@ -16,13 +16,21 @@ async function getApplicantProof(query) {
                 count++;
                 iql += ` applicant_proof_id = ${query.applicantProofId}`;
             }
+            if (query.applicantId) {
+                iql += count >= 1 ? ` AND` : ``;
+                count++;
+                iql += ` applicant_id = ${query.applicantId}`;
+            }
             if (query.isActive) {
                 iql += count >= 1 ? ` AND` : ``;
                 count++;
                 iql += ` is_active = ${query.isActive}`;
             }
         }
-        const result = sequelize.query(`SELECT * FROM applicant_proof ${iql != "" ? iql : ""}`, {
+        const result = sequelize.query(`SELECT ap.applicant_proof_id 'applicantProofId', ap.proof_type_id "proofTypeId", apt.proof_type_name "proofTypeName", 
+            ap.proof_no "proofNo", ap.image_name "imageName", ap.is_active "isActive", ap.createdAt, ap.updatedAt
+            FROM applicant_proof ap
+            left join applicant_proof_type apt on apt.applicant_proof_type_id = ap.proof_type_id ${iql}`, {
             type: QueryTypes.SELECT,
             raw: true,
             nest: false
@@ -49,7 +57,7 @@ async function createApplicantProof(postData,  externalCall = false) {
     }
 }
 
-async function updateApplicantProof(applicantProofId, putData) {
+async function updateApplicantProof(applicantId, putData, externalCall=false) {
     try {
         let applicantProofResult = "";
         _.forEach(putData, async function (item, index) {
@@ -59,20 +67,39 @@ async function updateApplicantProof(applicantProofId, putData) {
                 delete item.applicant_address_info_id;
                 applicantProofResult = await sequelize.models.applicant_proof.update(excuteMethod, { where: { applicant_proof_id: updateId } });
             } else {
+                excuteMethod.applicant_id = applicantId
                 applicantProofResult = await sequelize.models.applicant_proof.create(excuteMethod);
             }
         })
+        if(externalCall){
+            return true;
+          }else{
         const req = {
             applicantProofId: applicantProofResult.applicant_proof_id
         }
         return await getApplicantProof(req);
+    }
     } catch (error) {
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
 
+async function deleteApplicantProof(applicantProofId) {
+    try {
+      const applicantProofResult = await sequelize.models.applicant_proof.destroy({ where: { applicant_proof_id: applicantProofId } });
+      if(applicantProofResult == 1){
+        return "Deleted Successfully...!";
+      }else{
+        return "Data Not Founded...!";
+      }
+  } catch (error) {
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
+  }
+  }
+
 module.exports = {
     getApplicantProof,
     updateApplicantProof,
-    createApplicantProof
+    createApplicantProof,
+    deleteApplicantProof
 };

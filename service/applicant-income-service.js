@@ -51,14 +51,18 @@ async function createApplicantIncome(postData, externalCall = false) {
   }
 }
 
-async function updateApplicantIncome(applicantIncomeId, putData) {
+async function updateApplicantIncome(applicantIncomeId, putData, externalCall= false) {
   try {
     const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
     const applicantIncomeResult = await sequelize.models.applicant_income_info.update(excuteMethod, { where: { applicant_income_info_id: applicantIncomeId } });
+    if(externalCall){
+      return true;
+    }else{
     const req = {
       applicantIncomeId: applicantIncomeId
     }
     return await getApplicantIncome(req);
+  }
   } catch (error) {
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
