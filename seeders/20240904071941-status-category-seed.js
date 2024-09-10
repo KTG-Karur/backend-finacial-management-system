@@ -3,9 +3,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('status_category', [
+    return queryInterface.bulkInsert('status_categories', [
       {
         status_category_name: "Loan Status"
+      },
+      {
+        status_category_name: "Disbursed Method"
       },
       {
         status_category_name: "Loan Due Status"
@@ -23,6 +26,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('status_category', {}, null)
+    return queryInterface.bulkDelete('status_categories', {}, null)
   }
 };

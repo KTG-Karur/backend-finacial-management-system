@@ -85,8 +85,8 @@ async function getLoanDetails(query) {
     const result = await sequelize.query(
       `SELECT l.loan_id "loanId",l.applicant_id "applicantId",CONCAT(a.first_name,' ',a.last_name) as "applicantName" ,
       l.co_applicant_id "coApplicantId",CONCAT(a2.first_name,' ',a2.last_name) as "coApplicantName" ,
-      l.guarantor_id "guarantorId", CONCAT(a3.first_name,' ',a3.last_name) as "guarantorName" ,
-      l.category_id "categoryId", c.category_name "categoryName",
+      l.guarantor_id "guarantorId", CONCAT(a3.first_name,' ',a3.last_name) as "guarantorName" ,a.contact_no "contactNo" ,
+      l.category_id "categoryId", c.category_name "categoryName",a.applicant_code "applicantCode",
       l.sub_category_id "subCategoryId", sc.sub_category_name "subCategoryName",
       l.interest_rate "interestRate", l.application_no "applicationNo",
       l.loan_amount "loanAmount", l.due_amount "dueAmount", l.due_date "dueDate", l.last_date "lastDate",

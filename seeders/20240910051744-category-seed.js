@@ -3,17 +3,17 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('loan_status', [
+    return queryInterface.bulkInsert('categories', [
       {
-        loan_status_name: "Active Loan"
+        category_name: "Interest"
       },
       {
-        loan_status_name: "Closed Loan"
+        category_name: "EMI"
       },
     ]);
   },
 
   async down (queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('loan_status', {}, null)
+    return queryInterface.bulkDelete('categories', {}, null)
   }
 };

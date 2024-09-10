@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('address_type', [
+    return queryInterface.bulkInsert('address_types', [
       {
         address_type_name: "Permanent"
       },
@@ -14,6 +14,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('address_type', {}, null)
+    return queryInterface.bulkDelete('address_types', {}, null)
   }
 };
