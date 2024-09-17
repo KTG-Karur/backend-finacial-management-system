@@ -1,7 +1,5 @@
 'use strict';
 
-const fastify = require('fastify')();
-
 module.exports = function routesPlugin(fastify, opts, next) {
   fastify.register(require('./login-route'));
   fastify.register(require('./department-route'));
@@ -38,5 +36,7 @@ module.exports = function routesPlugin(fastify, opts, next) {
   fastify.register(require('./due-payment-history'));
   fastify.register(require('./day-book-history-route'));
   fastify.register(require('./day-book-route'));
+  fastify.register(require('./investment-route'));
+  fastify.register(require('./ledger-route'));
   next();
 };

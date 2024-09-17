@@ -15,6 +15,15 @@ module.exports = {
       db_sub_category_id: {
         type: Sequelize.INTEGER
       },
+      respective_id: {
+        type: Sequelize.INTEGER
+      },
+      created_by: {
+        type: Sequelize.INTEGER
+      },
+      is_closed: {
+        type: Sequelize.BOOLEAN
+      },
       amount: {
         type: Sequelize.STRING
       },

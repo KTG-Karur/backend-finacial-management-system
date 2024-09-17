@@ -4,6 +4,7 @@ const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
 const { Op } = require('sequelize');
+const { createDayBookHistory } = require('./day-book-history-service');
 
 async function getExpenseEntry(query) {
   try {
@@ -52,6 +53,14 @@ async function createExpenseEntry(postData) {
   try {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const expenseEntryResult = await sequelize.models.expense_entry.create(excuteMethod);
+    const dayBookReq={
+      respectiveId : expenseEntryResult.expense_entry_id,
+      dbCategoryId : 12,
+      dbSubCategoryId : 15,
+      amount : postData.expenseAmount,
+      createdBy : postData.createdBy
+    }
+    const dayBookEntry = await createDayBookHistory(dayBookReq)
     const req = {
       expenseEntryId: expenseEntryResult.expense_entry_id
     }

@@ -21,6 +21,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      is_investment: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: 0
+      },
       is_active: {
         allowNull: false,
         type: Sequelize.BOOLEAN,

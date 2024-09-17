@@ -4,6 +4,7 @@ const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
 const { Op } = require('sequelize');
+const { createDayBookHistory } = require('./day-book-history-service');
 
 async function getIncomeEntry(query) {
   try {
@@ -52,22 +53,31 @@ async function getIncomeEntry(query) {
 async function createIncomeEntry(postData) {
   try {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
-    const income_entryResult = await sequelize.models.income_entry.create(excuteMethod);
+    const incomeEntryResult = await sequelize.models.income_entry.create(excuteMethod);
+    const dayBookReq={
+      respectiveId : incomeEntryResult.income_entry_id,
+      dbCategoryId : 11,
+      dbSubCategoryId : 15,
+      amount : postData.incomeAmount,
+      createdBy : postData.createdBy
+    }
+    const dayBookEntry = await createDayBookHistory(dayBookReq)
     const req = {
-      incomeEntryId: income_entryResult.income_entry_id
+      incomeEntryId: incomeEntryResult.income_entry_id
     }
     return await getIncomeEntry(req);
   } catch (error) {
+    console.log(error)
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
 
-async function updateIncomeEntry(income_entryId, putData) {
+async function updateIncomeEntry(incomeEntryId, putData) {
   try {
     const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
-    const income_entryResult = await sequelize.models.income_entry.update(excuteMethod, { where: { income_entry_id: income_entryId } });
+    const income_entryResult = await sequelize.models.income_entry.update(excuteMethod, { where: { income_entry_id: incomeEntryId } });
     const req = {
-        incomeEntryId: income_entryId
+        incomeEntryId: incomeEntryId
     }
     return await getIncomeEntry(req);
 } catch (error) {

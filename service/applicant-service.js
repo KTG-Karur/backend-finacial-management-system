@@ -33,7 +33,6 @@ async function getApplicant(query) {
                 iql += ` a.is_active = ${query.isActive}`;
             }
         }
-        console.log(iql)
         const result = await sequelize.query(`SELECT a.applicant_id "applicantId", a.applicant_code "applicantCode", 
             CONCAT(a.first_name,' ' ,a.last_name) as applicantName,CONCAT(a.first_name,' ',a.last_name,'-',a.applicant_code) as applicantNameCode,at2.applicant_type_name "applicantTypeName",
             a.contact_no "contactNo" , g.gender_name "genderName", a.createdAt, a.updatedAt, a.is_active "isActive"
@@ -47,7 +46,6 @@ async function getApplicant(query) {
         });
         return result;
     } catch (error) {
-        console.log(error)
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
@@ -126,10 +124,8 @@ async function getApplicantInfoDetails(query) {
         const addressInfo = await getApplicantAddress(req)
         result[0].idProof = idProof;
         result[0].addressInfo = addressInfo;
-        console.log(result)
         return result;
     } catch (error) {
-        console.log(error)
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
@@ -149,7 +145,6 @@ async function createApplicant(postData) {
         const count = countResult.length > 0 ? parseInt(countResult[0].applicantCode.split("-").pop()) : `00000`
         personalInfoData.applicantCode = await generateSerialNumber(applicantCodeFormat, count)
         const excuteMethod = _.mapKeys(personalInfoData, (value, key) => _.snakeCase(key))
-        console.log(excuteMethod)
         const applicantResult = await sequelize.models.applicant.create(excuteMethod);
         const additionalInfoArr = postData?.additionalInfo || []
         if (additionalInfoArr.length > 0) {
@@ -179,7 +174,6 @@ async function createApplicant(postData) {
         }
         return await getApplicant(req);
     } catch (error) {
-        console.log(error)
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
@@ -216,7 +210,6 @@ async function updateApplicant(applicantId, putData) {
         }
         return await getApplicant(req);
     } catch (error) {
-        console.log(error)
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }

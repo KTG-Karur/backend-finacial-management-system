@@ -40,7 +40,6 @@ async function getEmployee(query) {
     });
     return result;
   } catch (error) {
-    console.log(error)
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
@@ -80,7 +79,6 @@ async function getEmployeeDetails(query) {
     });
     return result;
   } catch (error) {
-    console.log(error)
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }
@@ -113,7 +111,6 @@ async function createEmployee(postData) {
     }
     return await getEmployee(req);
   } catch (error) {
-    console.log(error)
     throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
   }
 }

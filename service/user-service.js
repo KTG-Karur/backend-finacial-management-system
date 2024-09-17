@@ -41,7 +41,6 @@ async function getUser(query) {
 }
 
 async function createUser(postData) {
-  console.log(postData)
   const v = new Validator()
   try {
     const validationResponse = await v.validate(postData, schema)

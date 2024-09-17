@@ -53,7 +53,6 @@ async function createApplicantDetails(postData, externalCall = false) {
 
 async function updateApplicantDetails(applicantDetailsId, putData, externalCall=false) {
   try {
-    console.log(putData)
     const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
     const applicantDetailsResult = await sequelize.models.applicant_details.update(excuteMethod, { where: { applicant_details_id: applicantDetailsId } });
     if(externalCall){
@@ -65,7 +64,6 @@ async function updateApplicantDetails(applicantDetailsId, putData, externalCall=
     return await getApplicantDetails(req);
   }
   } catch (error) {
-    console.log(error)
     throw new Error(error);
   }
 }

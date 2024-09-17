@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     opening_amount: DataTypes.STRING,
     closing_amount: DataTypes.STRING,
     created_by: DataTypes.INTEGER,
+    shortage: DataTypes.STRING,
+    reason: DataTypes.STRING,
+    income_amount: DataTypes.STRING,
+    expense_amount: DataTypes.STRING,
     closing_date: DataTypes.DATE
   }, {
     sequelize,

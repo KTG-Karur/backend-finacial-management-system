@@ -7,6 +7,7 @@ const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
 const duePaymentHistoryServices = require("../service/due-payment-history-service");
 const _ = require('lodash');
+const message = require('../helpers/message');
 
 const schema = {
   duePaymentHistoryName: { type: "string", optional: false, min: 1, max: 100 }
@@ -42,7 +43,7 @@ async function createDuePaymentHistory(req, res) {
     // }
   } catch (error) {
     responseEntries.error = true;
-    responseEntries.message = error.message ? error.message : error;
+    responseEntries.message = message.ALREADY_CREATED;
     responseEntries.code = responseCode.BAD_REQUEST;
     res.status(responseCode.BAD_REQUEST);
   } finally {

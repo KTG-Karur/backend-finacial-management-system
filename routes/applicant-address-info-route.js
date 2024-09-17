@@ -44,7 +44,6 @@ async function createApplicantAddress(req, res) {
     const v = new Validator()
     try {
         let validationResponse = await v.validate(req.body, schema)
-        console.log(validationResponse)
         if (validationResponse != true) {
             throw new Error(messages.VALIDATION_FAILED);
         } else {

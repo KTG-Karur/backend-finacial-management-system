@@ -15,6 +15,18 @@ module.exports = {
       closing_amount: {
         type: Sequelize.STRING
       },
+      shortage: {
+        type: Sequelize.STRING
+      },
+      income_amount: {
+        type: Sequelize.STRING
+      },
+      expense_amount: {
+        type: Sequelize.STRING
+      },
+      reason: {
+        type: Sequelize.STRING
+      },
       created_by: {
         type: Sequelize.INTEGER
       },

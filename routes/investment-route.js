@@ -5,31 +5,21 @@ const { verifyToken } = require("../middleware/auth");
 const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
-const loanServices = require("../service/loan-service");
+const investmentServices = require("../service/investment-service");
 const _ = require('lodash');
 
 const schema = {
-  applicantId: "number|required|integer|positive",
-  coApplicantId: "number|required|integer|positive",
-  guarantorId: "number|required|integer|positive",
-  categoryId: "number|required|integer|positive",
-  // subCategoryId: "number|required|integer|positive",
+  investorId: "number|required|integer|positive",
   interestRate: "number|required|integer|positive",
-  // dueTypeId: "number|required|integer|positive",
-  loanAmount: { type: "string", optional: false, min: 1, max: 100 },
-  // dueAmount: { type: "string", optional: false, min: 1, max: 100 },
-  // dueDate: { type: "string", format: "date", optional: false, },
-  // disbursedDate: { type: "string", format: "date", optional: false, },
-  // disbursedAmount: { type: "string", optional: false, min:1, max: 100 },
+  investmentAmount: { type: "string", optional: false, min: 1, max: 100 },
   disbursedMethodId: "number|required|integer|positive",
-  // bankAccountId: "number|required|integer|positive",
   createdBy: "number|required|integer|positive",
 }
 
-async function getLoan(req, res) {
+async function getInvestment(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await loanServices.getLoan(req.query);
+    responseEntries.data = await investmentServices.getInvestment(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -40,10 +30,10 @@ async function getLoan(req, res) {
   }
 }
 
-async function getLoanDetails(req, res) {
+async function getInvestmentDetails(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await loanServices.getLoanDetails(req.query);
+    responseEntries.data = await investmentServices.getInvestmentDetails(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -54,7 +44,7 @@ async function getLoanDetails(req, res) {
   }
 }
 
-async function createLoan(req, res) {
+async function createInvestment(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -62,7 +52,7 @@ async function createLoan(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     } else {
-      responseEntries.data = await loanServices.createLoan(req.body);
+      responseEntries.data = await investmentServices.createInvestment(req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -74,7 +64,7 @@ async function createLoan(req, res) {
   }
 }
 
-async function updateLoan(req, res) {
+async function updateInvestment(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -83,7 +73,7 @@ async function updateLoan(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     } else {
-      responseEntries.data = await loanServices.updateLoan(req.params.loanId, req.body);
+      responseEntries.data = await investmentServices.updateInvestment(req.params.investmentId, req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -99,29 +89,29 @@ async function updateLoan(req, res) {
 module.exports = async function (fastify) {
   fastify.route({
     method: 'GET',
-    url: '/loan',
+    url: '/investment',
     preHandler: verifyToken,
-    handler: getLoan
+    handler: getInvestment
   });
 
   fastify.route({
     method: 'GET',
-    url: '/loan-details',
+    url: '/investment-details',
     preHandler: verifyToken,
-    handler: getLoanDetails
+    handler: getInvestmentDetails
   });
 
   fastify.route({
     method: 'POST',
-    url: '/loan',
+    url: '/investment',
     preHandler: verifyToken,
-    handler: createLoan
+    handler: createInvestment
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/loan/:loanId',
+    url: '/investment/:investmentId',
     preHandler: verifyToken,
-    handler: updateLoan
+    handler: updateInvestment
   });
 };

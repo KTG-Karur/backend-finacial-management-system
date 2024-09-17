@@ -3,6 +3,7 @@
 const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
+const { QueryTypes } = require('sequelize');
 
 async function getDayBookHistory(query) {
     try {
@@ -13,18 +14,29 @@ async function getDayBookHistory(query) {
             if (query.dayBookHistoryId) {
                 iql += count >= 1 ? ` AND` : ``;
                 count++;
-                iql += ` day_book_history_id = ${query.dayBookHistoryId}`;
+                iql += ` dbh.day_book_history_id = ${query.dayBookHistoryId}`;
+            }
+            if (query.createdAt) {
+                iql += count >= 1 ? ` AND` : ``;
+                count++;
+                iql += ` DATE(dbh.createdAt) = '${query.createdAt}'`;
             }
         }
-        const result = await sequelize.query(`SELECT day_book_history_id "dayBookHistoryId", db_category_id "dbCategoryId",
-            db_sub_category_id "dbSubCategoryId", amount, day_book_id "dayBookId", createdAt, updatedAt
-            FROM day_book_histories; ${iql}`, {
+        console.log(iql)
+        const result = await sequelize.query(`SELECT dbh.day_book_history_id "dayBookHistoryId", dbh.db_category_id "dbCategoryId", sl.status_name "subCategoryName",
+            dbh.db_sub_category_id "dbSubCategoryId", dbh.amount, dbh.day_book_id "dayBookId", dbh.createdAt, dbh.updatedAt,
+            dbh.created_by "createdById", CONCAT(e.first_name,' ',e.last_name) as createdBy, dbh.is_closed "isClosed"
+            FROM day_book_histories dbh
+            left join status_lists sl on sl.status_list_id = dbh.db_sub_category_id 
+            left join employee e on e.employee_id = dbh.created_by  ${iql}`, {
             type: QueryTypes.SELECT,
             raw: true,
             nest: false
         });
         return result;
     } catch (error) {
+        console.log("error---->")
+        console.log(error)
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }
@@ -32,12 +44,14 @@ async function getDayBookHistory(query) {
 async function createDayBookHistory(postData) {
     try {
         const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
-        const dayBookHistoryResult = await sequelize.models.dayBookHistory.create(excuteMethod);
+        console.log(excuteMethod)
+        const dayBookHistoryResult = await sequelize.models.day_book_history.create(excuteMethod);
         const req = {
-            dayBookHistoryId: dayBookHistoryResult.dayBookHistory_id
+            dayBookHistoryId: dayBookHistoryResult.day_book_history_id
         }
         return await getDayBookHistory(req);
     } catch (error) {
+        console.log(error)
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }

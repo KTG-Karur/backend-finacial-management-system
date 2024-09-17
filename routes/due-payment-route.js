@@ -27,6 +27,21 @@ async function getDuePayment(req, res) {
   }
 }
 
+async function getDuePaymentDetails(req, res) {
+  const responseEntries = new ResponseEntry();
+  try {
+    responseEntries.data = await duePaymentServices.getDuePaymentDetails(req.query);
+    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+  } catch (error) {
+    responseEntries.error = true;
+    responseEntries.message = error.message ? error.message : error;
+    responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
+  } finally {
+    res.send(responseEntries);
+  }
+}
+
 async function createDuePayment(req, res) {
   const responseEntries = new ResponseEntry();
   // const v = new Validator()
@@ -80,6 +95,13 @@ module.exports = async function (fastify) {
     url: '/due-payment',
     preHandler: verifyToken,
     handler: getDuePayment
+  });
+
+  fastify.route({
+    method: 'GET',
+    url: '/due-payment-details',
+    preHandler: verifyToken,
+    handler: getDuePaymentDetails
   });
 
   fastify.route({

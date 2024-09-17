@@ -22,7 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     db_category_id: DataTypes.INTEGER,
     db_sub_category_id: DataTypes.INTEGER,
     amount: DataTypes.STRING,
-    day_book_id: DataTypes.INTEGER
+    day_book_id: DataTypes.INTEGER,
+    respective_id: DataTypes.INTEGER,
+    created_by: DataTypes.INTEGER,
+    is_closed: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'day_book_history',
