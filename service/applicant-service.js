@@ -10,6 +10,7 @@ const { createApplicantDetails, updateApplicantDetails } = require('./applicant-
 const { createApplicantProof, getApplicantProof, updateApplicantProof } = require('./applicant-proof-service');
 const { createApplicantAddress, getApplicantAddress, updateApplicantAddress } = require('./applicant-address-service');
 const { createApplicantIncome, updateApplicantIncome } = require('./applicant-income-service');
+const { createUser } = require('./user-service');
 
 async function getApplicant(query) {
     try {
@@ -140,10 +141,18 @@ async function createApplicant(postData) {
                 raw: true,
                 nest: false
             });
-        const applicantCodeFormat = `HFC-${moment().format('YY')}-CUS-`
+
+        const applicantCodeFormat = `HFC-${moment().format('YY')}-${postData.personalInfo[0].isBorrower === 1 ? 'INV' : 'CUS'}-`
         const personalInfoData = postData.personalInfo[0]
         const count = countResult.length > 0 ? parseInt(countResult[0].applicantCode.split("-").pop()) : `00000`
         personalInfoData.applicantCode = await generateSerialNumber(applicantCodeFormat, count)
+
+        const userInfo = {
+            userName: personalInfoData.applicantCode,
+            password: personalInfoData.contactNo
+        }
+        const userDetails = await createUser(userInfo)
+        personalInfoData.userId = userDetails[0].userId || ""
         const excuteMethod = _.mapKeys(personalInfoData, (value, key) => _.snakeCase(key))
         const applicantResult = await sequelize.models.applicant.create(excuteMethod);
         const additionalInfoArr = postData?.additionalInfo || []
@@ -160,7 +169,7 @@ async function createApplicant(postData) {
         }
         const proofInfoArr = postData?.proofInfo || []
         if (proofInfoArr.length > 0) {
-            const proofInfoData = postData.proofInfo.map(v => ({ ...v, applicantId: applicantResult.applicant_id }))
+            const proofInfoData = postData.proofInfo.map(v => ({ ...v, applicantId: applicantResult.applicant_id, imageName: `${applicantResult.applicant_code}-${v.imageName}` }))
             const proofInfoRes = await createApplicantProof(proofInfoData, true)
         }
         const addressInfoArr = postData?.addressInfo || []
@@ -168,6 +177,7 @@ async function createApplicant(postData) {
             const addressInfoData = postData.addressInfo.map(v => ({ ...v, applicantId: applicantResult.applicant_id }))
             const addressInfoRes = await createApplicantAddress(addressInfoData, true)
         }
+
 
         const req = {
             applicantId: applicantResult.applicant_id
@@ -182,7 +192,7 @@ async function updateApplicant(applicantId, putData) {
     try {
         const excuteMethod = _.mapKeys(putData.personalInfo[0], (value, key) => _.snakeCase(key))
         const applicantResult = await sequelize.models.applicant.update(excuteMethod, { where: { applicant_id: applicantId } });
-        const additionalInfoArr= putData.additionalInfo || []
+        const additionalInfoArr = putData.additionalInfo || []
         if (additionalInfoArr.length > 0) {
             const additionalInfoData = additionalInfoArr[0]
             const updateId = additionalInfoData.applicantDetailsId
@@ -190,18 +200,18 @@ async function updateApplicant(applicantId, putData) {
             const applicantDetailsRes = await updateApplicantDetails(updateId, additionalInfoData, true)
         }
 
-        const incomeInfoArr= putData.incomeInfo || []
+        const incomeInfoArr = putData.incomeInfo || []
         if (incomeInfoArr.length > 0) {
             const incomeInfoData = incomeInfoArr[0]
             const updateId = incomeInfoData.applicantIncomeInfoId
             delete incomeInfoData.applicantIncomeId
             const applicanIncomeRes = await updateApplicantIncome(updateId, incomeInfoData, true)
         }
-        const proofInfoArr= putData.proofInfo || []
+        const proofInfoArr = putData.proofInfo || []
         if (proofInfoArr.length > 0) {
             const proofInfoRes = await updateApplicantProof(applicantId, proofInfoArr, true)
         }
-        const addressInfoArr= putData.addressInfo || []
+        const addressInfoArr = putData.addressInfo || []
         if (addressInfoArr.length > 0) {
             const addressInfoRes = await updateApplicantAddress(applicantId, addressInfoArr, true)
         }

@@ -47,11 +47,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      transaction_id: {
+        type: Sequelize.STRING
+      },
       due_date: {
         allowNull: false,
         type: Sequelize.DATE
       },
       last_date: {
+        type: Sequelize.DATE
+      },
+      loan_date: {
         type: Sequelize.DATE
       },
       disbursed_date: {

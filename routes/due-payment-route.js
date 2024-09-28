@@ -42,19 +42,41 @@ async function getDuePaymentDetails(req, res) {
   }
 }
 
+async function getDuePaymentInvestor(req, res) {
+  const responseEntries = new ResponseEntry();
+  try {
+    responseEntries.data = await duePaymentServices.getDuePaymentInvestor(req.query);
+    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+  } catch (error) {
+    responseEntries.error = true;
+    responseEntries.message = error.message ? error.message : error;
+    responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
+  } finally {
+    res.send(responseEntries);
+  }
+}
+
+async function getDuePaymentInvestorDetails(req, res) {
+  const responseEntries = new ResponseEntry();
+  try {
+    responseEntries.data = await duePaymentServices.getDuePaymentInvestorDetails(req.query);
+    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
+  } catch (error) {
+    responseEntries.error = true;
+    responseEntries.message = error.message ? error.message : error;
+    responseEntries.code = responseCode.BAD_REQUEST;
+    res.status(responseCode.BAD_REQUEST);
+  } finally {
+    res.send(responseEntries);
+  }
+}
+
 async function createDuePayment(req, res) {
   const responseEntries = new ResponseEntry();
-  // const v = new Validator()
   try {
     responseEntries.data = await duePaymentServices.createDuePayment(req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
-    // const validationResponse = await v.validate(req.body, schema)
-    // if (validationResponse != true) {
-    //   throw new Error(messages.VALIDATION_FAILED);
-    // }else{
-    // responseEntries.data = await duePaymentServices.createDuePayment(req.body);
-    // if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
-    // }
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
@@ -67,18 +89,9 @@ async function createDuePayment(req, res) {
 
 async function updateDuePayment(req, res) {
   const responseEntries = new ResponseEntry();
-  // const v = new Validator()
   try {
     responseEntries.data = await duePaymentServices.updateDuePayment(req.params.duePaymentId, req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
-    // const filteredSchema = _.pick(schema, Object.keys(req.body));
-    // const validationResponse = v.validate(req.body, filteredSchema)
-    // if (validationResponse != true) {
-    //   throw new Error(messages.VALIDATION_FAILED);
-    // }else{
-    //   responseEntries.data = await duePaymentServices.updateDuePayment(req.params.duePaymentId, req.body);
-    //   if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
-    // }
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
@@ -102,6 +115,20 @@ module.exports = async function (fastify) {
     url: '/due-payment-details',
     preHandler: verifyToken,
     handler: getDuePaymentDetails
+  });
+
+  fastify.route({
+    method: 'GET',
+    url: '/investment-receipt',
+    preHandler: verifyToken,
+    handler: getDuePaymentInvestor
+  });
+
+  fastify.route({
+    method: 'GET',
+    url: '/investment-receipt-details',
+    preHandler: verifyToken,
+    handler: getDuePaymentInvestorDetails
   });
 
   fastify.route({

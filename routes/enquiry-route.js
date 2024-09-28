@@ -5,17 +5,19 @@ const { verifyToken } = require("../middleware/auth");
 const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
-const dayBookHistoryServices = require("../service/day-book-history-service");
+const enquiryServices = require("../service/enquiry-service");
 const _ = require('lodash');
 
 const schema = {
-  dayBookHistoryName: { type: "string", optional: false, min:1, max: 100 }
+  name: { type: "string", optional: false, min:1, max: 100 },
+  message: { type: "string", optional: false, min:1, max: 1000 },
+  contactNo: { type: "string", optional: false, min:10, max: 10 },
 }
 
-async function getDayBookHistory(req, res) {
+async function getEnquiry(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await dayBookHistoryServices.getDayBookHistory(req.query);
+    responseEntries.data = await enquiryServices.getEnquiry(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -27,7 +29,7 @@ async function getDayBookHistory(req, res) {
   }
 }
 
-async function createDayBookHistory(req, res) {
+async function createEnquiry(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -35,7 +37,7 @@ async function createDayBookHistory(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-    responseEntries.data = await dayBookHistoryServices.createDayBookHistory(req.body);
+    responseEntries.data = await enquiryServices.createEnquiry(req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -48,7 +50,7 @@ async function createDayBookHistory(req, res) {
   }
 }
 
-async function updateDayBookHistory(req, res) {
+async function updateEnquiry(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -57,7 +59,7 @@ async function updateDayBookHistory(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-      responseEntries.data = await dayBookHistoryServices.updateDayBookHistory(req.params.dayBookHistoryId, req.body);
+      responseEntries.data = await enquiryServices.updateEnquiry(req.params.enquiryId, req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -70,10 +72,10 @@ async function updateDayBookHistory(req, res) {
   }
 }
 
-async function deleteDayBookHistory(req, res) {
+async function deleteEnquiry(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await dayBookHistoryServices.deleteDayBookHistory(req.params.dayBookHistoryId);
+    responseEntries.data = await enquiryServices.deleteEnquiry(req.params.enquiryId);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -85,31 +87,31 @@ async function deleteDayBookHistory(req, res) {
 }
 
 module.exports = async function (fastify) {
-  // fastify.route({
-  //   method: 'GET',
-  //   url: '/day-book-history',
-  //   preHandler: verifyToken,
-  //   handler: getDayBookHistory
-  // });
+  fastify.route({
+    method: 'GET',
+    url: '/enquiry',
+    // preHandler: verifyToken,
+    handler: getEnquiry
+  });
 
   fastify.route({
     method: 'POST',
-    url: '/day-book-history',
-    preHandler: verifyToken,
-    handler: createDayBookHistory
+    url: '/enquiry',
+    // preHandler: verifyToken,
+    handler: createEnquiry
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/day-book-history/:dayBookHistoryId',
-    preHandler: verifyToken,
-    handler: updateDayBookHistory
+    url: '/enquiry/:enquiryId',
+    // preHandler: verifyToken,
+    handler: updateEnquiry
   });
 
   fastify.route({
     method: 'DELETE',
-    url: '/day-book-history/:dayBookHistoryId',
+    url: '/enquiry/:enquiryId',
     preHandler: verifyToken,
-    handler: deleteDayBookHistory
+    handler: deleteEnquiry
   });
 };

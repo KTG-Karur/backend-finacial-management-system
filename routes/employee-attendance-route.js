@@ -5,20 +5,17 @@ const { verifyToken } = require("../middleware/auth");
 const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
-const dayBookServices = require("../service/day-book-service");
+const employeeAttendanceServices = require("../service/employee-attendance-service");
 const _ = require('lodash');
 
 const schema = {
-    openingAmount: { type: "string", optional: false, min:1, max: 100 },
-    closingAmount: { type: "string", optional: false, min:1, max: 100 },
-    closingDate: { type: "string", format: "date", },
-    createdBy: "number|required|integer|positive",
+  employeeAttendanceName: { type: "string", optional: false, min:1, max: 100 }
 }
 
-async function getDayBook(req, res) {
+async function getEmployeeAttendance(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await dayBookServices.getDayBook(req.query);
+    responseEntries.data = await employeeAttendanceServices.getEmployeeAttendance(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -30,10 +27,10 @@ async function getDayBook(req, res) {
   }
 }
 
-async function getDayBookDetails(req, res) {
+async function getEmployeeAttendanceReport(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await dayBookServices.getDayBookHistoryDetails(req.query);
+    responseEntries.data = await employeeAttendanceServices.getEmployeeAttendanceReport(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -45,17 +42,17 @@ async function getDayBookDetails(req, res) {
   }
 }
 
-async function createDayBook(req, res) {
+async function createEmployeeAttendance(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
-    responseEntries.data = await dayBookServices.createDayBook(req.body);
+    responseEntries.data = await employeeAttendanceServices.createEmployeeAttendance(req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     // const validationResponse = await v.validate(req.body, schema)
     // if (validationResponse != true) {
     //   throw new Error(messages.VALIDATION_FAILED);
     // }else{
-    // responseEntries.data = await dayBookServices.createDayBook(req.body);
+    // responseEntries.data = await employeeAttendanceServices.createEmployeeAttendance(req.body);
     // if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     // }
   } catch (error) {
@@ -68,35 +65,20 @@ async function createDayBook(req, res) {
   }
 }
 
-async function updateDayBook(req, res) {
+async function updateEmployeeAttendance(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
-    responseEntries.data = await dayBookServices.updateDayBook(req.params.dayBookId, req.body);
+    responseEntries.data = await employeeAttendanceServices.updateEmployeeAttendance(req.params.employeeAttendanceId, req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     // const filteredSchema = _.pick(schema, Object.keys(req.body));
     // const validationResponse = v.validate(req.body, filteredSchema)
     // if (validationResponse != true) {
     //   throw new Error(messages.VALIDATION_FAILED);
     // }else{
-    //   responseEntries.data = await dayBookServices.updateDayBook(req.params.dayBookId, req.body);
+    //   responseEntries.data = await employeeAttendanceServices.updateEmployeeAttendance(req.params.employeeAttendanceId, req.body);
     //   if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     // }
-  } catch (error) {
-    responseEntries.error = true;
-    responseEntries.message = error.message ? error.message : error;
-    responseEntries.code = error.code ? error.code : responseCode.BAD_REQUEST;
-    res.status(responseCode.BAD_REQUEST);
-  } finally {
-    res.send(responseEntries);
-  }
-}
-
-async function deleteDayBook(req, res) {
-  const responseEntries = new ResponseEntry();
-  try {
-    responseEntries.data = await dayBookServices.deleteDayBook(req.params.dayBookId);
-    if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
     responseEntries.message = error.message ? error.message : error;
@@ -110,36 +92,30 @@ async function deleteDayBook(req, res) {
 module.exports = async function (fastify) {
   fastify.route({
     method: 'GET',
-    url: '/day-book',
+    url: '/employee-attendance',
     preHandler: verifyToken,
-    handler: getDayBook
+    handler: getEmployeeAttendance
   });
 
   fastify.route({
     method: 'GET',
-    url: '/day-book-history',
+    url: '/employee-attendance-report',
     preHandler: verifyToken,
-    handler: getDayBookDetails
+    handler: getEmployeeAttendanceReport
   });
 
   fastify.route({
     method: 'POST',
-    url: '/day-book',
+    url: '/employee-attendance',
     preHandler: verifyToken,
-    handler: createDayBook
+    handler: createEmployeeAttendance
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/day-book/:dayBookId',
+    url: '/employee-attendance/:employeeAttendanceId',
     preHandler: verifyToken,
-    handler: updateDayBook
+    handler: updateEmployeeAttendance
   });
 
-  fastify.route({
-    method: 'DELETE',
-    url: '/day-book/:dayBookId',
-    preHandler: verifyToken,
-    handler: deleteDayBook
-  });
 };

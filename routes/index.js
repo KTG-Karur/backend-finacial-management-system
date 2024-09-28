@@ -38,5 +38,10 @@ module.exports = function routesPlugin(fastify, opts, next) {
   fastify.register(require('./day-book-route'));
   fastify.register(require('./investment-route'));
   fastify.register(require('./ledger-route'));
+  fastify.register(require('./search-applicant-route'));
+  fastify.register(require('./employee-attendance-route'));
+  fastify.register(require('./faq-route'));
+  fastify.register(require('./enquiry-route'));
+  fastify.register(require('./applicant-proof-upload-route'));
   next();
 };

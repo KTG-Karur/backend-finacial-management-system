@@ -33,12 +33,14 @@ module.exports = (sequelize, DataTypes) => {
     last_date: DataTypes.DATE,
     disbursed_date: DataTypes.DATE,
     disbursed_amount: DataTypes.STRING,
+    transaction_id: DataTypes.STRING,
     tenure_period: DataTypes.INTEGER,
     disbursed_method_id: DataTypes.INTEGER,
     bank_account_id: DataTypes.INTEGER,
     created_by: DataTypes.INTEGER,
     approved_by: DataTypes.INTEGER,
     approved_date: DataTypes.DATE,
+    loan_date: DataTypes.DATE,
     loan_status_id: DataTypes.INTEGER,
     is_active: DataTypes.BOOLEAN
   }, {

@@ -76,6 +76,14 @@ module.exports = {
         status_name: "Entry Payment"
       },
       //-----Day Book Sub-Catgeory------//
+      {
+        status_category_id : 7,
+        status_name: "Present"
+      },
+      {
+        status_category_id : 7,
+        status_name: "Absent"
+      },
     ]);
   },
 

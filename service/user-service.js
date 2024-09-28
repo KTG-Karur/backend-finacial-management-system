@@ -7,9 +7,8 @@ const { encrptPassword } = require('../utils/utility');
 const Validator = require('fastest-validator')
 
 const schema = {
-  userName: { type: "email", optional: false, min:1, max: 100 },
+  userName: { type: "string", optional: false, min:1, max: 100 },
   password: "string|min:6",
-  employeeId : "number|optional|integer|positive",
 }
 
 async function getUser(query) {
@@ -41,6 +40,7 @@ async function getUser(query) {
 }
 
 async function createUser(postData) {
+  console.log(postData)
   const v = new Validator()
   try {
     const validationResponse = await v.validate(postData, schema)

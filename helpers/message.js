@@ -8,4 +8,6 @@ module.exports = {
     INVALID_INPUTS : 'In-Valid Inputs....!',
     VALIDATION_FAILED : 'Validation Fails...!',
     ALREADY_CREATED : 'Already Generated Month Receipt..!',
+    INCORRECT_PASSWORD : 'Incorrect Password...!',
+    UNSUPPORTED_FILE : 'Unsupported Files...!',
 };

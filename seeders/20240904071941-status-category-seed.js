@@ -22,6 +22,9 @@ module.exports = {
       {
         status_category_name: "Day Book Sub-Category"
       },
+      {
+        status_category_name: "Attendance Status"
+      },
     ]);
   },
 

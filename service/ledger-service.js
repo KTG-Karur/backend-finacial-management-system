@@ -7,10 +7,10 @@ const { QueryTypes } = require('sequelize');
 
 async function getLedgerEmployee(query) {
     try {
-        let iql = "";
-        let count = 0;
+        let iql = `WHERE loan_status_id = 4`;
+        let count = 1;
         if (query && Object.keys(query).length) {
-            iql += `WHERE`;
+            // iql += `WHERE loan_status_id = 4`;
             if (query.employeeId) {
                 iql += count >= 1 ? ` AND` : ``;
                 count++;
@@ -22,12 +22,19 @@ async function getLedgerEmployee(query) {
                 iql += ` emp.is_active = ${query.isActive}`;
             }
         }
-        const result = await sequelize.query(`SELECT emp.employee_id "employeeId",CONCAT(emp.first_name,' ',emp.last_name) AS employeeName,
-            emp.contact_no "contactNo", emp.date_of_joining "dateOfJoining", emp.role_id "roleId", r.role_name "roleName",emp.gender_id "genderId",
-            emp.department_id "departmentId",d.department_name "departmentName",emp.employee_code "employeeCode", emp.is_active "isActive"
-            FROM employee emp
-            left join role r on r.role_id = emp.role_id
-            left join department d on d.department_id = emp.department_id ${iql}`, {
+        console.log(iql)
+        const result = await sequelize.query(`SELECT l.loan_id "loanId", l.applicant_id "applicantId", CONCAT(a.first_name,' ',a.last_name) as "customerName",
+            a.contact_no "contactNo",a.applicant_code "applicantCode",
+            l.category_id "categoryId",c.category_name "categoryName",
+            l.interest_rate "interestRate", l.application_no "applicationNo",
+            l.loan_amount "loanAmount", l.due_amount "dueAmount", l.due_date "dueDate",
+            l.disbursed_date "disbursedDate", l.created_by "createdBy",
+            l.loan_status_id "loanStatusId",sl.status_name "statusName",
+            loan_date "loanDate", transaction_id
+            FROM loans l
+            left join applicants a on a.applicant_id = l.applicant_id 
+            left join categories c on c.category_id = l.category_id 
+            left join status_lists sl on sl.status_list_id = l.loan_status_id ${iql}`, {
             type: QueryTypes.SELECT,
             raw: true,
             nest: false

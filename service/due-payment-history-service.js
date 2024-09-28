@@ -27,6 +27,11 @@ async function getDuePaymentHistory(query) {
         count++;
         iql += ` MONTH(dph.createdAt) = ${query.createdAt}`;
       }
+      if (query.loanId) {
+        iql += count >= 1 ? ` AND` : ``;
+        count++;
+        iql += ` dp.loan_id = ${query.loanId}`;
+      }
       if (query.isActive) {
         iql += count >= 1 ? ` AND` : ``;
         count++;
@@ -43,23 +48,24 @@ async function getDuePaymentHistory(query) {
     //     raw: true,
     //     nest: false
     // });
-    console.log(iql)
-    const result = await sequelize.query(`SELECT dph.due_payment_history_id "duePaymentHistoryId",
-        dph.due_payment_id "duePaymentId",l.application_no "applicationNo",dp.due_amount "dueAmount",
-        dph.paid_amount "totalPaidAmount",dph.paid_date "paidDate", dp.total_amount "totalAmount",l.category_id "categoryId",
-        a.applicant_code "applicantCode",CONCAT(a.first_name,' ',a.last_name) as applicantName,dph.due_date "dueDate",
-        a.contact_no "contactNo",dph.payment_status_id "paymentStatusId", sl.status_name "paymentStatusName"
-        FROM due_payment_histories dph
-        left join due_payments dp on dp.due_payment_id = dph.due_payment_id
-        left join loans l on l.loan_id = dp.loan_id
-        left join applicants a on a.applicant_id = l.applicant_id
-        left join status_lists sl on sl.status_list_id = dph.payment_status_id ${iql}`, {
+    const result = await sequelize.query(`SELECT dph.due_payment_history_id "duePaymentHistoryId",dph.fine_amount "fineAmount",
+      dph.due_payment_id "duePaymentId",l.application_no "applicationNo",dp.due_amount "dueAmount",
+      dph.paid_amount "totalPaidAmount",dph.paid_date "paidDate", dp.total_amount "totalAmount",l.category_id "categoryId",
+      a.applicant_code "applicantCode",CONCAT(a.first_name,' ',a.last_name) as applicantName,dph.due_date "dueDate",
+      a.contact_no "contactNo",dph.payment_status_id "paymentStatusId", sl.status_name "paymentStatusName"
+      FROM due_payment_histories dph
+      left join due_payments dp on dp.due_payment_id = dph.due_payment_id
+      left join loans l on l.loan_id = dp.loan_id
+      left join applicants a on a.applicant_id = l.applicant_id
+      left join status_lists sl on sl.status_list_id = dph.payment_status_id ${iql}`, {
       type: QueryTypes.SELECT,
       raw: true,
       nest: false
     });
+    console.log(result)
     return result;
   } catch (error) {
+    console.log(error)
     throw new Error(error?.errors[0]?.message ? error.errors[0].message : error.TypeError || messages.OPERATION_ERROR);
   }
 }

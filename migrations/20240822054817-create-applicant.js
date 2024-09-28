@@ -44,6 +44,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      user_id: {
+        type: Sequelize.INTEGER
+      },
       is_borrower: {
         allowNull: false,
         type: Sequelize.BOOLEAN,

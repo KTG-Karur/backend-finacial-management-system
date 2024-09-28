@@ -56,15 +56,27 @@ async function createDayBookHistory(postData) {
     }
 }
 
-async function updateDayBookHistory(dayBookHistoryId, putData) {
+async function updateDayBookHistory(dayBookHistoryId, putData, condition = false) {
     try {
-        const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
-        const dayBookHistoryResult = await sequelize.models.dayBookHistory.update(excuteMethod, { where: { dayBookHistory_id: dayBookHistoryId } });
-        const req = {
-            dayBookHistoryId: dayBookHistoryId
+        if(condition){
+            console.log("true-------->")
+            const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
+            // const iqlCondition = `DATE(createdAt) : ${dayBookHistoryId}`
+            const dayBookHistoryResult = await sequelize.models.day_book_history.update(excuteMethod, { where: sequelize.where(sequelize.fn('DATE', sequelize.col('createdAt')), dayBookHistoryId) });
+            const req = {
+                dayBookHistoryId: dayBookHistoryId
+            }
+            return await getDayBookHistory(req);
+        }else{
+            const excuteMethod = _.mapKeys(putData, (value, key) => _.snakeCase(key))
+            const dayBookHistoryResult = await sequelize.models.day_book_history.update(excuteMethod, { where: { dayBookHistory_id: dayBookHistoryId } });
+            const req = {
+                dayBookHistoryId: dayBookHistoryId
+            }
+            return await getDayBookHistory(req);
         }
-        return await getDayBookHistory(req);
     } catch (error) {
+        console.log(error)
         throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
     }
 }

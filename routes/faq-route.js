@@ -5,17 +5,18 @@ const { verifyToken } = require("../middleware/auth");
 const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
-const dayBookHistoryServices = require("../service/day-book-history-service");
+const faqServices = require("../service/faq-service");
 const _ = require('lodash');
 
 const schema = {
-  dayBookHistoryName: { type: "string", optional: false, min:1, max: 100 }
+  question: { type: "string", optional: false, min:1, max: 1000 },
+  answer: { type: "string", optional: false, min:1, max: 1000 }
 }
 
-async function getDayBookHistory(req, res) {
+async function getFaq(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await dayBookHistoryServices.getDayBookHistory(req.query);
+    responseEntries.data = await faqServices.getFaq(req.query);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -27,7 +28,7 @@ async function getDayBookHistory(req, res) {
   }
 }
 
-async function createDayBookHistory(req, res) {
+async function createFaq(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -35,7 +36,7 @@ async function createDayBookHistory(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-    responseEntries.data = await dayBookHistoryServices.createDayBookHistory(req.body);
+    responseEntries.data = await faqServices.createFaq(req.body);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -48,7 +49,7 @@ async function createDayBookHistory(req, res) {
   }
 }
 
-async function updateDayBookHistory(req, res) {
+async function updateFaq(req, res) {
   const responseEntries = new ResponseEntry();
   const v = new Validator()
   try {
@@ -57,7 +58,7 @@ async function updateDayBookHistory(req, res) {
     if (validationResponse != true) {
       throw new Error(messages.VALIDATION_FAILED);
     }else{
-      responseEntries.data = await dayBookHistoryServices.updateDayBookHistory(req.params.dayBookHistoryId, req.body);
+      responseEntries.data = await faqServices.updateFaq(req.params.faqId, req.body);
       if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     }
   } catch (error) {
@@ -70,10 +71,10 @@ async function updateDayBookHistory(req, res) {
   }
 }
 
-async function deleteDayBookHistory(req, res) {
+async function deleteFaq(req, res) {
   const responseEntries = new ResponseEntry();
   try {
-    responseEntries.data = await dayBookHistoryServices.deleteDayBookHistory(req.params.dayBookHistoryId);
+    responseEntries.data = await faqServices.deleteFaq(req.params.faqId);
     if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
   } catch (error) {
     responseEntries.error = true;
@@ -85,31 +86,31 @@ async function deleteDayBookHistory(req, res) {
 }
 
 module.exports = async function (fastify) {
-  // fastify.route({
-  //   method: 'GET',
-  //   url: '/day-book-history',
-  //   preHandler: verifyToken,
-  //   handler: getDayBookHistory
-  // });
+  fastify.route({
+    method: 'GET',
+    url: '/faq',
+    preHandler: verifyToken,
+    handler: getFaq
+  });
 
   fastify.route({
     method: 'POST',
-    url: '/day-book-history',
+    url: '/faq',
     preHandler: verifyToken,
-    handler: createDayBookHistory
+    handler: createFaq
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/day-book-history/:dayBookHistoryId',
+    url: '/faq/:faqId',
     preHandler: verifyToken,
-    handler: updateDayBookHistory
+    handler: updateFaq
   });
 
   fastify.route({
     method: 'DELETE',
-    url: '/day-book-history/:dayBookHistoryId',
+    url: '/faq/:faqId',
     preHandler: verifyToken,
-    handler: deleteDayBookHistory
+    handler: deleteFaq
   });
 };
