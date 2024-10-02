@@ -84,6 +84,19 @@ module.exports = {
         status_category_id : 7,
         status_name: "Absent"
       },
+      //-----Applicant Category------//
+      {
+        status_category_id : 8,
+        status_name: "Customer"
+      },
+      {
+        status_category_id : 8,
+        status_name: "Partner"
+      },
+      {
+        status_category_id : 8,
+        status_name: "Investor"
+      },
     ]);
   },
 

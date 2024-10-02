@@ -1,37 +1,42 @@
-"use strict";
+'use strict';
 
 const { verifyToken } = require("../middleware/auth");
 const { ResponseEntry } = require("../helpers/construct-response");
 const responseCode = require("../helpers/status-code");
 const messages = require("../helpers/message");
-const uploadService = require("../helpers/upload-images");
-const _ = require('lodash');
-const fastifyMultipart = require('@fastify/multipart');
+const fs = require('fs');
+const path = require('path');
+const pump = require('pump');
 
 async function UploadApplicantProof(req, res) {
     const responseEntries = new ResponseEntry();
     try {
-        console.log(req.parts)
-        const parts = req.parts();
-        const files = []; // To hold uploaded files
-        const otherFields = {}; // To hold other form fields
+        // Ensure the uploads directory exists
+        const uploadDir = './uploads';
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const parts = await req.files(); // Get all the files and fields
+        const files = []; 
+        const otherFields = {}; 
 
         for await (const part of parts) {
             if (part.file) {
-                // If the part is a file
-                const buffer = await part.toBuffer(); // Get the file as buffer
-                const fileName = part.filename; // Get the file name
+                const fileName = `${Date.now()}-${part.filename}`; // Unique file name
+                const filePath = path.join(uploadDir, fileName); // Full path to save the file
 
-                // Store file information
-                files.push({ fileName, buffer });
-                console.log('File received:', fileName);
+                await pump(part.file, fs.createWriteStream(filePath)); // Save the file
+
+                files.push(fileName); // Collect saved file names
+                console.log(`File saved: ${fileName}`);
             } else {
-                // If the part is a regular field
-                otherFields[part.fieldname] = part.value; // Save other field data
+                otherFields[part.fieldname] = part.value; // Save non-file fields
                 console.log(`Field received: ${part.fieldname} = ${part.value}`);
             }
         }
-        // responseEntries.data = await uploadService.upload(req.formData);
+
+        responseEntries.data = messages.UPLOADED_SUCCESSFULLY; // Send the collected data
         if (!responseEntries.data) responseEntries.message = messages.DATA_NOT_FOUND;
     } catch (error) {
         responseEntries.error = true;
@@ -43,17 +48,16 @@ async function UploadApplicantProof(req, res) {
 }
 
 module.exports = async function (fastify) {
-    fastify.register(fastifyMultipart, {
+    fastify.register(require('@fastify/multipart'), {
         limits: {
-            fileSize: 1024 * 1024 * 5, 
+            fileSize: 1024 * 1024 * 5 // Set file size limit to 5MB
         }
     });
 
     fastify.route({
         method: 'POST',
         url: '/upload-proof',
-        preHandler: verifyToken,
+        preHandler: [verifyToken],
         handler: UploadApplicantProof
     });
-
 };

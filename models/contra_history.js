@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class bank_account extends Model {
+  class contra_history extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,23 +13,19 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  bank_account.init({
-    bank_account_id: {
+  contra_history.init({
+    contra_history_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    account_holder_name: DataTypes.STRING,
-    bank_name: DataTypes.STRING,
-    branch_name: DataTypes.STRING,
-    account_no: DataTypes.STRING,
-    ifsc_code: DataTypes.STRING,
+    contra_id: DataTypes.INTEGER,
     transaction_id: DataTypes.STRING,
-    is_active: DataTypes.BOOLEAN,
-    company_account: DataTypes.BOOLEAN
+    cash_history_id: DataTypes.INTEGER,
+    amount: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'bank_account',
+    modelName: 'contra_history',
   });
-  return bank_account;
+  return contra_history;
 };

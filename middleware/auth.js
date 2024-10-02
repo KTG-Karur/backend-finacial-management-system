@@ -9,7 +9,7 @@ async function verifyToken(req, reply) {
         //         code : UNAUTHORIZED,
         //         Message : "Invaild Token...!"}) 
         // }
-        console.log(decoded.email)
+        // console.log(decoded.email)
         await req.jwtVerify()
         return { success : true}
     } catch (error) {

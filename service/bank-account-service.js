@@ -3,6 +3,7 @@
 const sequelize = require('../models/index').sequelize;
 const messages = require("../helpers/message");
 const _ = require('lodash');
+const { createContra } = require('./contra-service');
 
 async function getBankAccount(query) {
   try {
@@ -11,14 +12,18 @@ async function getBankAccount(query) {
       if (query.bankAccountId) {
         iql.bank_account_id = query.bankAccountId;
       }
+      if (query.companyAccount) {
+        iql.company_account = query.companyAccount;
+      }
       if (query.isActive) {
         iql.is_active = query.isActive;
       }
     }
     const result = await sequelize.models.bank_account.findAll({
-      attributes: [['bank_account_id', 'bankAccountId'], 
+      attributes: [['bank_account_id', 'bankAccountId'],
       ['account_holder_name', 'accountHolderName'],
       ['bank_name', 'bankName'],
+      ['company_account', 'companyAccount'],
       ['branch_name', 'branchName'],
       ['account_no', 'accountNo'],
       ['transaction_id', 'transactionId'],
@@ -38,6 +43,14 @@ async function createBankAccount(postData) {
   try {
     const excuteMethod = _.mapKeys(postData, (value, key) => _.snakeCase(key))
     const bankAccountResult = await sequelize.models.bank_account.create(excuteMethod);
+    if (postData.companyAccount === 1) {
+      const contraReq = {
+        "disbursedMethodId": 6,
+        "bankId": bankAccountResult.bank_account_id,
+        "totalAmount": "0"
+      }
+      const resContra = await createContra(contraReq)
+    }
     const req = {
       bankAccountId: bankAccountResult.bank_account_id
     }
@@ -55,22 +68,22 @@ async function updateBankAccount(bankAccountId, putData) {
       bankAccountId: bankAccountId
     }
     return await getBankAccount(req);
-} catch (error) {
-  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
-}
+  } catch (error) {
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
+  }
 }
 
 async function deleteBankAccount(bankAccountId) {
   try {
     const bankAccountResult = await sequelize.models.bankAccount.destroy({ where: { bank_account_id: bankAccountId } });
-    if(bankAccountResult == 1){
+    if (bankAccountResult == 1) {
       return "Deleted Successfully...!";
-    }else{
+    } else {
       return "Data Not Founded...!";
     }
-} catch (error) {
-  throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
-}
+  } catch (error) {
+    throw new Error(error.errors[0].message ? error.errors[0].message : messages.OPERATION_ERROR);
+  }
 }
 
 module.exports = {

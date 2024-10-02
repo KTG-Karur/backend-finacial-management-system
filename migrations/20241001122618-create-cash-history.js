@@ -2,54 +2,48 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('bank_accounts', {
-      bank_account_id: {
+    await queryInterface.createTable('cash_histories', {
+      cash_history_id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      account_holder_name: {
+      contra_id: {
+        type: Sequelize.INTEGER
+      },
+      two_thous_count: {
         type: Sequelize.STRING
       },
-      bank_name: {
-        allowNull: false,
+      five_hund_count: {
         type: Sequelize.STRING
       },
-      branch_name: {
+      hund_count: {
         type: Sequelize.STRING
       },
-      account_no: {
-        allowNull: false,
+      five_coin_count: {
         type: Sequelize.STRING
       },
-      ifsc_code: {
-        allowNull: false,
+      two_coin_count: {
         type: Sequelize.STRING
       },
-      transaction_id: {
+      one_coin_count: {
         type: Sequelize.STRING
       },
-      company_account: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN,
-        defaultValue: 0
-      },
-      is_active: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN,
-        defaultValue: 1
+      amount: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
       updatedAt: {
+        allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('bank_accounts');
+    await queryInterface.dropTable('cash_histories');
   }
 };

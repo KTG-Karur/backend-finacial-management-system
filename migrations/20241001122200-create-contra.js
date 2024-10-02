@@ -2,43 +2,48 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('bank_accounts', {
-      bank_account_id: {
+    await queryInterface.createTable('contras', {
+      contra_id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      account_holder_name: {
+      disbursed_method_id: {
+        type: Sequelize.INTEGER
+      },
+      bank_id: {
+        type: Sequelize.INTEGER
+      },
+      total_amount: {
         type: Sequelize.STRING
       },
-      bank_name: {
-        allowNull: false,
+      two_thous_count: {
         type: Sequelize.STRING
       },
-      branch_name: {
+      five_hund_count: {
         type: Sequelize.STRING
       },
-      account_no: {
-        allowNull: false,
+      hund_count: {
         type: Sequelize.STRING
       },
-      ifsc_code: {
-        allowNull: false,
+      five_coin_count: {
         type: Sequelize.STRING
       },
-      transaction_id: {
+      two_coin_count: {
         type: Sequelize.STRING
       },
-      company_account: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN,
-        defaultValue: 0
+      one_coin_count: {
+        type: Sequelize.STRING
       },
-      is_active: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN,
-        defaultValue: 1
+      fivty_count: {
+        type: Sequelize.STRING
+      },
+      twenty_count: {
+        type: Sequelize.STRING
+      },
+      ten_count: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -50,6 +55,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('bank_accounts');
+    await queryInterface.dropTable('contras');
   }
 };

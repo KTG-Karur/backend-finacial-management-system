@@ -10,4 +10,5 @@ module.exports = {
     ALREADY_CREATED : 'Already Generated Month Receipt..!',
     INCORRECT_PASSWORD : 'Incorrect Password...!',
     UNSUPPORTED_FILE : 'Unsupported Files...!',
+    UPLOADED_SUCCESSFULLY : 'Uploaded Successfully...!',
 };

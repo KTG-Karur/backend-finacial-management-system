@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     disbursed_date: DataTypes.DATE,
     lock_period: DataTypes.STRING,
     due_date: DataTypes.DATE,
+    loan_date: DataTypes.DATE,
     due_amount: DataTypes.STRING,
     transaction_id: DataTypes.STRING,
     application_no: DataTypes.STRING,
@@ -35,7 +36,8 @@ module.exports = (sequelize, DataTypes) => {
     approved_by: DataTypes.INTEGER,
     disbursed_method_id: DataTypes.INTEGER,
     bank_account_id: DataTypes.INTEGER,
-    investment_status_id: DataTypes.INTEGER
+    investment_status_id: DataTypes.INTEGER,
+    reason: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'investments',

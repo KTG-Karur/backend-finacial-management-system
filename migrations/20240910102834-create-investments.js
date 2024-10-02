@@ -45,6 +45,9 @@ module.exports = {
       due_amount: {
         type: Sequelize.STRING
       },
+      reason: {
+        type: Sequelize.STRING
+      },
       disbursed_method_id: {
         type: Sequelize.INTEGER
       },
@@ -59,6 +62,9 @@ module.exports = {
       },
       investment_status_id: {
         type: Sequelize.INTEGER
+      },
+      loan_date: {
+        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,

@@ -43,5 +43,8 @@ module.exports = function routesPlugin(fastify, opts, next) {
   fastify.register(require('./faq-route'));
   fastify.register(require('./enquiry-route'));
   fastify.register(require('./applicant-proof-upload-route'));
+  fastify.register(require('./contra-route'));
+  fastify.register(require('./contra-history-route'));
+  fastify.register(require('./cash-history-route'));
   next();
 };

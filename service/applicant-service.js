@@ -23,10 +23,10 @@ async function getApplicant(query) {
                 count++;
                 iql += ` a.applicant_id = ${query.applicantId}`;
             }
-            if (query.isBorrower) {
+            if (query.applicantCategory) {
                 iql += count >= 1 ? ` AND` : ``;
                 count++;
-                iql += ` a.is_borrower = ${query.isBorrower}`;
+                iql += ` a.applicant_category = ${query.applicantCategory}`;
             }
             if (query.isActive) {
                 iql += count >= 1 ? ` AND` : ``;
@@ -142,7 +142,7 @@ async function createApplicant(postData) {
                 nest: false
             });
 
-        const applicantCodeFormat = `HFC-${moment().format('YY')}-${postData.personalInfo[0].isBorrower === 1 ? 'INV' : 'CUS'}-`
+        const applicantCodeFormat = `HFC-${moment().format('YY')}-${postData.personalInfo[0].applicantCategory === 18 ? 'CUS' :postData.personalInfo[0].applicantCategory === 19 ? 'PART' : 'INV'}-`
         const personalInfoData = postData.personalInfo[0]
         const count = countResult.length > 0 ? parseInt(countResult[0].applicantCode.split("-").pop()) : `00000`
         personalInfoData.applicantCode = await generateSerialNumber(applicantCodeFormat, count)
@@ -190,6 +190,14 @@ async function createApplicant(postData) {
 
 async function updateApplicant(applicantId, putData) {
     try {
+        const applicantRes = await sequelize.query(
+            `SELECT applicant_code "applicantCode" FROM applicants WHERE applicant_id=${applicantId}
+            ORDER BY applicant_id `,
+            {
+                type: QueryTypes.SELECT,
+                raw: true,
+                nest: false
+            });
         const excuteMethod = _.mapKeys(putData.personalInfo[0], (value, key) => _.snakeCase(key))
         const applicantResult = await sequelize.models.applicant.update(excuteMethod, { where: { applicant_id: applicantId } });
         const additionalInfoArr = putData.additionalInfo || []
@@ -209,7 +217,9 @@ async function updateApplicant(applicantId, putData) {
         }
         const proofInfoArr = putData.proofInfo || []
         if (proofInfoArr.length > 0) {
-            const proofInfoRes = await updateApplicantProof(applicantId, proofInfoArr, true)
+            console.log(applicantResult)
+            const proofInfoData = putData.proofInfo.map(v => ({ ...v, imageName: v.imageName.includes("HFC") ?  `${v.imageName}` : `${applicantRes[0].applicantCode}-${v.imageName}` }))
+            const proofInfoRes = await updateApplicantProof(applicantId, proofInfoData, true)
         }
         const addressInfoArr = putData.addressInfo || []
         if (addressInfoArr.length > 0) {

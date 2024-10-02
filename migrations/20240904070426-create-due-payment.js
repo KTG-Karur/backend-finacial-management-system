@@ -40,6 +40,9 @@ module.exports = {
       loan_due_status_id: {
         type: Sequelize.INTEGER
       },
+      is_investment: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
